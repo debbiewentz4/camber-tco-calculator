@@ -1029,18 +1029,21 @@ function bindInputs() {
     if (!el) return;
 
     const update = () => {
-      const v = el.type === 'range' || el.type === 'number' ? +el.value : el.value;
-      state[id] = v;
-      if (el.type === 'range') syncRange(id, v);
+      const raw = el.type === 'range' || el.type === 'number' ? +el.value : el.value;
+      // Skip if the field is empty or produced NaN — keeps last good value
+      if (el.type === 'number' && (el.value === '' || isNaN(raw))) return;
+      state[id] = raw;
+      if (el.type === 'range') syncRange(id, raw);
       if (id === 'analysis_period') {
-        document.getElementById('savings-yrs').textContent = v;
+        document.getElementById('savings-yrs').textContent = raw;
       }
       calculate();
       saveToURL();
     };
 
+    // Fire on every keystroke for numbers AND on change/blur — whichever comes first
+    el.addEventListener('input', update);
     el.addEventListener('change', update);
-    if (el.type === 'range') el.addEventListener('input', update);
   });
 }
 

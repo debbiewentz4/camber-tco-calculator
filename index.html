@@ -1064,14 +1064,12 @@ function setInputValues() {
 // 5. CALCULATION ENGINE
 // ────────────────────────────────────────────────────────────────
 
-/** Sync all DOM inputs into state, then calculate. Called by the Calculate button. */
+/** Called by every input's oninput/onchange and the Calculate button. */
 function syncAndCalculate() {
+  // Sync range display labels before calculating
   Object.keys(DEFAULTS[vehicleType]).forEach(id => {
     const el = document.getElementById(id);
-    if (!el) return;
-    const v = (el.type === 'range' || el.type === 'number') ? +el.value : el.value;
-    state[id] = v;
-    if (el.type === 'range') syncRange(id, v);
+    if (el && el.type === 'range') syncRange(id, el.value);
   });
   calculate();
   saveToURL();
@@ -1090,10 +1088,19 @@ function pvStream(cost1, escalPct, years, discPct) {
 /** Present value of a flat annual cost. */
 const pvFlat = (c, y, r) => pvStream(c, 0, y, r);
 
+function getVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  return el.type === 'select-one' ? el.value : (parseFloat(el.value) || 0);
+}
+
 function calculate() {
-  const s        = state;
-  const { analysis_period: Y, annual_mileage: M, fleet_size: F,
-          discount_rate: R }  = s;
+  // Read every value directly from the DOM — no stale state possible
+  const s = {};
+  Object.keys(DEFAULTS[vehicleType]).forEach(id => { s[id] = getVal(id); });
+  state = s; // keep state in sync for URL saving etc.
+
+  const Y = s.analysis_period, M = s.annual_mileage, F = s.fleet_size, R = s.discount_rate;
   const totalMiles = M * Y;
 
   /* ── ICE ── */

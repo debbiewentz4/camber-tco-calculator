@@ -773,7 +773,7 @@
       <!-- Actions -->
       <div class="tco-actions">
         <button class="btn btn-outline" onclick="resetDefaults()">↺ Reset to defaults</button>
-        <button class="btn btn-primary" style="font-size:0.9375rem;padding:0.5rem 1.5rem;" onclick="calculate()">▶ Calculate</button>
+        <button class="btn btn-primary" style="font-size:0.9375rem;padding:0.5rem 1.5rem;" onclick="syncAndCalculate()">▶ Calculate</button>
         <button class="btn btn-outline"  onclick="shareLink()">⎘ Copy share link</button>
       </div>
 
@@ -1060,6 +1060,19 @@ function setInputValues() {
 // ────────────────────────────────────────────────────────────────
 // 5. CALCULATION ENGINE
 // ────────────────────────────────────────────────────────────────
+
+/** Sync all DOM inputs into state, then calculate. Called by the Calculate button. */
+function syncAndCalculate() {
+  Object.keys(DEFAULTS[vehicleType]).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const v = (el.type === 'range' || el.type === 'number') ? +el.value : el.value;
+    state[id] = v;
+    if (el.type === 'range') syncRange(id, v);
+  });
+  calculate();
+  saveToURL();
+}
 
 /** Present value of an escalating annual cost stream. */
 function pvStream(cost1, escalPct, years, discPct) {

@@ -459,17 +459,17 @@
           <div class="field-row">
             <div class="field">
               <label>Fleet size (vehicles)</label>
-              <input type="number" id="fleet_size" min="1" max="5000" step="1">
+              <input type="number" id="fleet_size" min="1" max="5000" step="1" oninput="syncAndCalculate()">
             </div>
             <div class="field">
               <label>Analysis period (years)</label>
-              <input type="number" id="analysis_period" min="1" max="20" step="1">
+              <input type="number" id="analysis_period" min="1" max="20" step="1" oninput="syncAndCalculate()">
             </div>
           </div>
           <div class="field">
             <label>Annual mileage per vehicle</label>
             <div class="input-wrap pr">
-              <input type="number" id="annual_mileage" min="1000" max="200000" step="1000">
+              <input type="number" id="annual_mileage" min="1000" max="200000" step="1000" oninput="syncAndCalculate()">
               <span class="adorn right">mi/yr</span>
             </div>
           </div>
@@ -491,12 +491,12 @@
                 <label>Purchase price</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="ice_purchase_price" min="0" step="500">
+                  <input type="number" id="ice_purchase_price" min="0" step="500" oninput="syncAndCalculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Fuel type</label>
-                <select id="fuel_type">
+                <select id="fuel_type" onchange="syncAndCalculate()">
                   <option value="gasoline">Gasoline</option>
                   <option value="diesel">Diesel</option>
                   <option value="cng">CNG</option>
@@ -505,7 +505,7 @@
               <div class="field">
                 <label>Fuel economy</label>
                 <div class="input-wrap pr">
-                  <input type="number" id="fuel_economy" min="0.5" step="0.5">
+                  <input type="number" id="fuel_economy" min="0.5" step="0.5" oninput="syncAndCalculate()">
                   <span class="adorn right">MPG</span>
                 </div>
               </div>
@@ -513,13 +513,13 @@
                 <label>Maintenance ($/mi)</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="ice_maintenance_cost" min="0" step="0.005">
+                  <input type="number" id="ice_maintenance_cost" min="0" step="0.005" oninput="syncAndCalculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Residual value — <b id="rv_ice_lbl">30</b>%</label>
                 <div class="range-row">
-                  <input type="range" id="residual_value_ice" min="0" max="60" step="1">
+                  <input type="range" id="residual_value_ice" min="0" max="60" step="1" oninput="syncAndCalculate()">
                   <span class="range-val" id="rv_ice_val">30%</span>
                 </div>
               </div>
@@ -532,20 +532,20 @@
                 <label>Purchase price</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="bev_purchase_price" min="0" step="500">
+                  <input type="number" id="bev_purchase_price" min="0" step="500" oninput="syncAndCalculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Efficiency</label>
                 <div class="input-wrap pr2">
-                  <input type="number" id="electric_efficiency" min="0.05" step="0.01">
+                  <input type="number" id="electric_efficiency" min="0.05" step="0.01" oninput="syncAndCalculate()">
                   <span class="adorn right">kWh/mi</span>
                 </div>
               </div>
               <div class="field">
                 <label>Battery capacity</label>
                 <div class="input-wrap pr">
-                  <input type="number" id="battery_capacity" min="10" step="5">
+                  <input type="number" id="battery_capacity" min="10" step="5" oninput="syncAndCalculate()">
                   <span class="adorn right">kWh</span>
                 </div>
               </div>
@@ -553,13 +553,13 @@
                 <label>Maintenance ($/mi)</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="bev_maintenance_cost" min="0" step="0.005">
+                  <input type="number" id="bev_maintenance_cost" min="0" step="0.005" oninput="syncAndCalculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Residual value — <b id="rv_bev_lbl">25</b>%</label>
                 <div class="range-row">
-                  <input type="range" id="residual_value_bev" min="0" max="60" step="1">
+                  <input type="range" id="residual_value_bev" min="0" max="60" step="1" oninput="syncAndCalculate()">
                   <span class="range-val" id="rv_bev_val">25%</span>
                 </div>
               </div>
@@ -572,12 +572,12 @@
               <label>Battery replacement cost</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="battery_replacement_cost" min="0" step="1000">
+                <input type="number" id="battery_replacement_cost" min="0" step="1000" oninput="syncAndCalculate()">
               </div>
             </div>
             <div class="field">
               <label>Battery warranty (yrs)</label>
-              <input type="number" id="battery_warranty_period" min="1" max="20" step="1">
+              <input type="number" id="battery_warranty_period" min="1" max="20" step="1" oninput="syncAndCalculate()">
             </div>
           </div>
         </div>
@@ -598,14 +598,14 @@
                 <label>Fuel price</label>
                 <div class="input-wrap pl pr">
                   <span class="adorn left">$</span>
-                  <input type="number" id="fuel_price" min="0" step="0.05">
+                  <input type="number" id="fuel_price" min="0" step="0.05" oninput="syncAndCalculate()">
                   <span class="adorn right">/gal</span>
                 </div>
               </div>
               <div class="field">
                 <label>Price escalation — <b id="fuel_esc_lbl">2.5</b>%/yr</label>
                 <div class="range-row">
-                  <input type="range" id="fuel_price_escalation" min="0" max="10" step="0.5">
+                  <input type="range" id="fuel_price_escalation" min="0" max="10" step="0.5" oninput="syncAndCalculate()">
                   <span class="range-val" id="fuel_esc_val">2.5%</span>
                 </div>
               </div>
@@ -613,7 +613,7 @@
                 <label>Federal excise tax</label>
                 <div class="input-wrap pl pr">
                   <span class="adorn left">$</span>
-                  <input type="number" id="federal_excise_tax" min="0" step="0.001">
+                  <input type="number" id="federal_excise_tax" min="0" step="0.001" oninput="syncAndCalculate()">
                   <span class="adorn right">/gal</span>
                 </div>
               </div>
@@ -625,14 +625,14 @@
                 <label>Electricity rate</label>
                 <div class="input-wrap pl pr2">
                   <span class="adorn left">$</span>
-                  <input type="number" id="electricity_rate" min="0" step="0.005">
+                  <input type="number" id="electricity_rate" min="0" step="0.005" oninput="syncAndCalculate()">
                   <span class="adorn right">/kWh</span>
                 </div>
               </div>
               <div class="field">
                 <label>Rate escalation — <b id="elec_esc_lbl">1.5</b>%/yr</label>
                 <div class="range-row">
-                  <input type="range" id="electricity_escalation" min="0" max="10" step="0.5">
+                  <input type="range" id="electricity_escalation" min="0" max="10" step="0.5" oninput="syncAndCalculate()">
                   <span class="range-val" id="elec_esc_val">1.5%</span>
                 </div>
               </div>
@@ -640,7 +640,7 @@
                 <label>Monthly demand charge</label>
                 <div class="input-wrap pl pr">
                   <span class="adorn left">$</span>
-                  <input type="number" id="demand_charge_monthly" min="0" step="25">
+                  <input type="number" id="demand_charge_monthly" min="0" step="25" oninput="syncAndCalculate()">
                   <span class="adorn right">/mo</span>
                 </div>
               </div>
@@ -661,12 +661,12 @@
               <label>Charger cost (installed)</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="charger_cost" min="0" step="500">
+                <input type="number" id="charger_cost" min="0" step="500" oninput="syncAndCalculate()">
               </div>
             </div>
             <div class="field">
               <label>Number of chargers</label>
-              <input type="number" id="number_of_chargers" min="1" step="1">
+              <input type="number" id="number_of_chargers" min="1" step="1" oninput="syncAndCalculate()">
             </div>
           </div>
           <div class="field-row">
@@ -674,14 +674,14 @@
               <label>Annual maintenance / charger</label>
               <div class="input-wrap pl pr">
                 <span class="adorn left">$</span>
-                <input type="number" id="charger_maintenance" min="0" step="100">
+                <input type="number" id="charger_maintenance" min="0" step="100" oninput="syncAndCalculate()">
                 <span class="adorn right">/yr</span>
               </div>
             </div>
             <div class="field">
               <label>Useful life</label>
               <div class="input-wrap pr">
-                <input type="number" id="infrastructure_useful_life" min="1" max="30" step="1">
+                <input type="number" id="infrastructure_useful_life" min="1" max="30" step="1" oninput="syncAndCalculate()">
                 <span class="adorn right">yrs</span>
               </div>
             </div>
@@ -689,7 +689,7 @@
           <div class="field">
             <label>Infrastructure tax credit (ITC) — <b id="itc_lbl">30</b>%</label>
             <div class="range-row">
-              <input type="range" id="infrastructure_tax_credit" min="0" max="50" step="1">
+              <input type="range" id="infrastructure_tax_credit" min="0" max="50" step="1" oninput="syncAndCalculate()">
               <span class="range-val" id="itc_val">30%</span>
             </div>
           </div>
@@ -708,21 +708,21 @@
               <label>Federal EV credit (IRA)</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="federal_tax_credit_bev" min="0" step="500">
+                <input type="number" id="federal_tax_credit_bev" min="0" step="500" oninput="syncAndCalculate()">
               </div>
             </div>
             <div class="field">
               <label>State / local incentives</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="statelocal_incentives_bev" min="0" step="500">
+                <input type="number" id="statelocal_incentives_bev" min="0" step="500" oninput="syncAndCalculate()">
               </div>
             </div>
           </div>
           <div class="field">
             <label>Sales tax — <b id="stax_lbl">7.5</b>%</label>
             <div class="range-row">
-              <input type="range" id="sales_tax" min="0" max="15" step="0.25">
+              <input type="range" id="sales_tax" min="0" max="15" step="0.25" oninput="syncAndCalculate()">
               <span class="range-val" id="stax_val">7.5%</span>
             </div>
           </div>
@@ -739,7 +739,7 @@
           <div class="field">
             <label>Discount rate — <b id="dr_lbl">5.0</b>%</label>
             <div class="range-row">
-              <input type="range" id="discount_rate" min="0" max="15" step="0.5">
+              <input type="range" id="discount_rate" min="0" max="15" step="0.5" oninput="syncAndCalculate()">
               <span class="range-val" id="dr_val">5.0%</span>
             </div>
           </div>
@@ -747,7 +747,7 @@
             <div class="field">
               <label>BEV insurance vs. ICE</label>
               <div class="input-wrap pr2">
-                <input type="number" id="insurance_premium_diff" min="-50" max="150" step="1">
+                <input type="number" id="insurance_premium_diff" min="-50" max="150" step="1" oninput="syncAndCalculate()">
                 <span class="adorn right">% more</span>
               </div>
             </div>
@@ -755,7 +755,7 @@
               <label>Driver labor rate</label>
               <div class="input-wrap pl pr">
                 <span class="adorn left">$</span>
-                <input type="number" id="driver_labor_cost" min="0" step="1">
+                <input type="number" id="driver_labor_cost" min="0" step="1" oninput="syncAndCalculate()">
                 <span class="adorn right">/hr</span>
               </div>
             </div>
@@ -763,7 +763,7 @@
           <div class="field">
             <label>Charging time per session</label>
             <div class="input-wrap pr">
-              <input type="number" id="charging_time_per_cycle" min="0" step="0.25">
+              <input type="number" id="charging_time_per_cycle" min="0" step="0.25" oninput="syncAndCalculate()">
               <span class="adorn right">hrs</span>
             </div>
           </div>

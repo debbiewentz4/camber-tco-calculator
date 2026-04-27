@@ -1051,6 +1051,11 @@ function pvStream(cost1, escalPct, years, discPct) {
 const pvFlat = (c, y, r) => pvStream(c, 0, y, r);
 
 function calculate() {
+  try { _calculate(); } catch(e) {
+    document.getElementById('savings-amount').textContent = 'Error: ' + e.message;
+  }
+}
+function _calculate() {
   // ── read everything straight from the page ──
   const Y = n('analysis_period'), M = n('annual_mileage'),
         F = n('fleet_size'),      R = n('discount_rate');

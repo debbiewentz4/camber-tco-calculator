@@ -459,17 +459,17 @@
           <div class="field-row">
             <div class="field">
               <label>Fleet size (vehicles)</label>
-              <input type="number" id="fleet_size" min="1" max="5000" step="1" oninput="syncAndCalculate()">
+              <input type="number" id="fleet_size" min="1" max="5000" step="1" oninput="calculate()">
             </div>
             <div class="field">
               <label>Analysis period (years)</label>
-              <input type="number" id="analysis_period" min="1" max="20" step="1" oninput="syncAndCalculate()">
+              <input type="number" id="analysis_period" min="1" max="20" step="1" oninput="calculate()">
             </div>
           </div>
           <div class="field">
             <label>Annual mileage per vehicle</label>
             <div class="input-wrap pr">
-              <input type="number" id="annual_mileage" min="1000" max="200000" step="1000" oninput="syncAndCalculate()">
+              <input type="number" id="annual_mileage" min="1000" max="200000" step="1000" oninput="calculate()">
               <span class="adorn right">mi/yr</span>
             </div>
           </div>
@@ -491,7 +491,7 @@
                 <label>Purchase price</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="ice_purchase_price" min="0" step="500" oninput="syncAndCalculate()">
+                  <input type="number" id="ice_purchase_price" min="0" step="500" oninput="calculate()">
                 </div>
               </div>
               <div class="field">
@@ -505,7 +505,7 @@
               <div class="field">
                 <label>Fuel economy</label>
                 <div class="input-wrap pr">
-                  <input type="number" id="fuel_economy" min="0.5" step="0.5" oninput="syncAndCalculate()">
+                  <input type="number" id="fuel_economy" min="0.5" step="0.5" oninput="calculate()">
                   <span class="adorn right">MPG</span>
                 </div>
               </div>
@@ -513,13 +513,13 @@
                 <label>Maintenance ($/mi)</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="ice_maintenance_cost" min="0" step="0.005" oninput="syncAndCalculate()">
+                  <input type="number" id="ice_maintenance_cost" min="0" step="0.005" oninput="calculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Residual value — <b id="rv_ice_lbl">30</b>%</label>
                 <div class="range-row">
-                  <input type="range" id="residual_value_ice" min="0" max="60" step="1" oninput="syncAndCalculate()">
+                  <input type="range" id="residual_value_ice" min="0" max="60" step="1" oninput="updateRange(this.id);calculate()">
                   <span class="range-val" id="rv_ice_val">30%</span>
                 </div>
               </div>
@@ -532,20 +532,20 @@
                 <label>Purchase price</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="bev_purchase_price" min="0" step="500" oninput="syncAndCalculate()">
+                  <input type="number" id="bev_purchase_price" min="0" step="500" oninput="calculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Efficiency</label>
                 <div class="input-wrap pr2">
-                  <input type="number" id="electric_efficiency" min="0.05" step="0.01" oninput="syncAndCalculate()">
+                  <input type="number" id="electric_efficiency" min="0.05" step="0.01" oninput="calculate()">
                   <span class="adorn right">kWh/mi</span>
                 </div>
               </div>
               <div class="field">
                 <label>Battery capacity</label>
                 <div class="input-wrap pr">
-                  <input type="number" id="battery_capacity" min="10" step="5" oninput="syncAndCalculate()">
+                  <input type="number" id="battery_capacity" min="10" step="5" oninput="calculate()">
                   <span class="adorn right">kWh</span>
                 </div>
               </div>
@@ -553,13 +553,13 @@
                 <label>Maintenance ($/mi)</label>
                 <div class="input-wrap pl">
                   <span class="adorn left">$</span>
-                  <input type="number" id="bev_maintenance_cost" min="0" step="0.005" oninput="syncAndCalculate()">
+                  <input type="number" id="bev_maintenance_cost" min="0" step="0.005" oninput="calculate()">
                 </div>
               </div>
               <div class="field">
                 <label>Residual value — <b id="rv_bev_lbl">25</b>%</label>
                 <div class="range-row">
-                  <input type="range" id="residual_value_bev" min="0" max="60" step="1" oninput="syncAndCalculate()">
+                  <input type="range" id="residual_value_bev" min="0" max="60" step="1" oninput="updateRange(this.id);calculate()">
                   <span class="range-val" id="rv_bev_val">25%</span>
                 </div>
               </div>
@@ -572,12 +572,12 @@
               <label>Battery replacement cost</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="battery_replacement_cost" min="0" step="1000" oninput="syncAndCalculate()">
+                <input type="number" id="battery_replacement_cost" min="0" step="1000" oninput="calculate()">
               </div>
             </div>
             <div class="field">
               <label>Battery warranty (yrs)</label>
-              <input type="number" id="battery_warranty_period" min="1" max="20" step="1" oninput="syncAndCalculate()">
+              <input type="number" id="battery_warranty_period" min="1" max="20" step="1" oninput="calculate()">
             </div>
           </div>
         </div>
@@ -598,14 +598,14 @@
                 <label>Fuel price</label>
                 <div class="input-wrap pl pr">
                   <span class="adorn left">$</span>
-                  <input type="number" id="fuel_price" min="0" step="0.05" oninput="syncAndCalculate()">
+                  <input type="number" id="fuel_price" min="0" step="0.05" oninput="calculate()">
                   <span class="adorn right">/gal</span>
                 </div>
               </div>
               <div class="field">
                 <label>Price escalation — <b id="fuel_esc_lbl">2.5</b>%/yr</label>
                 <div class="range-row">
-                  <input type="range" id="fuel_price_escalation" min="0" max="10" step="0.5" oninput="syncAndCalculate()">
+                  <input type="range" id="fuel_price_escalation" min="0" max="10" step="0.5" oninput="updateRange(this.id);calculate()">
                   <span class="range-val" id="fuel_esc_val">2.5%</span>
                 </div>
               </div>
@@ -613,7 +613,7 @@
                 <label>Federal excise tax</label>
                 <div class="input-wrap pl pr">
                   <span class="adorn left">$</span>
-                  <input type="number" id="federal_excise_tax" min="0" step="0.001" oninput="syncAndCalculate()">
+                  <input type="number" id="federal_excise_tax" min="0" step="0.001" oninput="calculate()">
                   <span class="adorn right">/gal</span>
                 </div>
               </div>
@@ -625,14 +625,14 @@
                 <label>Electricity rate</label>
                 <div class="input-wrap pl pr2">
                   <span class="adorn left">$</span>
-                  <input type="number" id="electricity_rate" min="0" step="0.005" oninput="syncAndCalculate()">
+                  <input type="number" id="electricity_rate" min="0" step="0.005" oninput="calculate()">
                   <span class="adorn right">/kWh</span>
                 </div>
               </div>
               <div class="field">
                 <label>Rate escalation — <b id="elec_esc_lbl">1.5</b>%/yr</label>
                 <div class="range-row">
-                  <input type="range" id="electricity_escalation" min="0" max="10" step="0.5" oninput="syncAndCalculate()">
+                  <input type="range" id="electricity_escalation" min="0" max="10" step="0.5" oninput="updateRange(this.id);calculate()">
                   <span class="range-val" id="elec_esc_val">1.5%</span>
                 </div>
               </div>
@@ -640,7 +640,7 @@
                 <label>Monthly demand charge</label>
                 <div class="input-wrap pl pr">
                   <span class="adorn left">$</span>
-                  <input type="number" id="demand_charge_monthly" min="0" step="25" oninput="syncAndCalculate()">
+                  <input type="number" id="demand_charge_monthly" min="0" step="25" oninput="calculate()">
                   <span class="adorn right">/mo</span>
                 </div>
               </div>
@@ -661,12 +661,12 @@
               <label>Charger cost (installed)</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="charger_cost" min="0" step="500" oninput="syncAndCalculate()">
+                <input type="number" id="charger_cost" min="0" step="500" oninput="calculate()">
               </div>
             </div>
             <div class="field">
               <label>Number of chargers</label>
-              <input type="number" id="number_of_chargers" min="1" step="1" oninput="syncAndCalculate()">
+              <input type="number" id="number_of_chargers" min="1" step="1" oninput="calculate()">
             </div>
           </div>
           <div class="field-row">
@@ -674,14 +674,14 @@
               <label>Annual maintenance / charger</label>
               <div class="input-wrap pl pr">
                 <span class="adorn left">$</span>
-                <input type="number" id="charger_maintenance" min="0" step="100" oninput="syncAndCalculate()">
+                <input type="number" id="charger_maintenance" min="0" step="100" oninput="calculate()">
                 <span class="adorn right">/yr</span>
               </div>
             </div>
             <div class="field">
               <label>Useful life</label>
               <div class="input-wrap pr">
-                <input type="number" id="infrastructure_useful_life" min="1" max="30" step="1" oninput="syncAndCalculate()">
+                <input type="number" id="infrastructure_useful_life" min="1" max="30" step="1" oninput="calculate()">
                 <span class="adorn right">yrs</span>
               </div>
             </div>
@@ -689,7 +689,7 @@
           <div class="field">
             <label>Infrastructure tax credit (ITC) — <b id="itc_lbl">30</b>%</label>
             <div class="range-row">
-              <input type="range" id="infrastructure_tax_credit" min="0" max="50" step="1" oninput="syncAndCalculate()">
+              <input type="range" id="infrastructure_tax_credit" min="0" max="50" step="1" oninput="updateRange(this.id);calculate()">
               <span class="range-val" id="itc_val">30%</span>
             </div>
           </div>
@@ -708,21 +708,21 @@
               <label>Federal EV credit (IRA)</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="federal_tax_credit_bev" min="0" step="500" oninput="syncAndCalculate()">
+                <input type="number" id="federal_tax_credit_bev" min="0" step="500" oninput="calculate()">
               </div>
             </div>
             <div class="field">
               <label>State / local incentives</label>
               <div class="input-wrap pl">
                 <span class="adorn left">$</span>
-                <input type="number" id="statelocal_incentives_bev" min="0" step="500" oninput="syncAndCalculate()">
+                <input type="number" id="statelocal_incentives_bev" min="0" step="500" oninput="calculate()">
               </div>
             </div>
           </div>
           <div class="field">
             <label>Sales tax — <b id="stax_lbl">7.5</b>%</label>
             <div class="range-row">
-              <input type="range" id="sales_tax" min="0" max="15" step="0.25" oninput="syncAndCalculate()">
+              <input type="range" id="sales_tax" min="0" max="15" step="0.25" oninput="updateRange(this.id);calculate()">
               <span class="range-val" id="stax_val">7.5%</span>
             </div>
           </div>
@@ -739,7 +739,7 @@
           <div class="field">
             <label>Discount rate — <b id="dr_lbl">5.0</b>%</label>
             <div class="range-row">
-              <input type="range" id="discount_rate" min="0" max="15" step="0.5" oninput="syncAndCalculate()">
+              <input type="range" id="discount_rate" min="0" max="15" step="0.5" oninput="updateRange(this.id);calculate()">
               <span class="range-val" id="dr_val">5.0%</span>
             </div>
           </div>
@@ -747,7 +747,7 @@
             <div class="field">
               <label>BEV insurance vs. ICE</label>
               <div class="input-wrap pr2">
-                <input type="number" id="insurance_premium_diff" min="-50" max="150" step="1" oninput="syncAndCalculate()">
+                <input type="number" id="insurance_premium_diff" min="-50" max="150" step="1" oninput="calculate()">
                 <span class="adorn right">% more</span>
               </div>
             </div>
@@ -755,7 +755,7 @@
               <label>Driver labor rate</label>
               <div class="input-wrap pl pr">
                 <span class="adorn left">$</span>
-                <input type="number" id="driver_labor_cost" min="0" step="1" oninput="syncAndCalculate()">
+                <input type="number" id="driver_labor_cost" min="0" step="1" oninput="calculate()">
                 <span class="adorn right">/hr</span>
               </div>
             </div>
@@ -763,7 +763,7 @@
           <div class="field">
             <label>Charging time per session</label>
             <div class="input-wrap pr">
-              <input type="number" id="charging_time_per_cycle" min="0" step="0.25" oninput="syncAndCalculate()">
+              <input type="number" id="charging_time_per_cycle" min="0" step="0.25" oninput="calculate()">
               <span class="adorn right">hrs</span>
             </div>
           </div>
@@ -859,7 +859,9 @@
 
 <script>
 /* ================================================================
-   CAMBER FLEET TCO CALCULATOR — v1.0
+   CAMBER FLEET TCO CALCULATOR — v2.0  SIMPLIFIED
+   calculate() reads directly from DOM every time. No state object.
+
    ================================================================
 
    ARCHITECTURE
@@ -970,182 +972,124 @@ const DEFAULTS = {
 };
 
 // ────────────────────────────────────────────────────────────────
-// 2. STATE & URL PERSISTENCE
+// 2. GLOBALS
 // ────────────────────────────────────────────────────────────────
-let state           = {};
-let vehicleType     = 'utility_van';
-let barChartInst    = null;
-let lineChartInst   = null;
+let vehicleType  = 'utility_van';
+let barChartInst = null;
+let lineChartInst = null;
 
-function saveToURL() {
-  const p = new URLSearchParams();
-  p.set('vt', vehicleType);
-  Object.entries(state).forEach(([k, v]) => p.set(k, v));
-  history.replaceState(null, '', window.location.pathname + '#?' + p.toString());
+// ────────────────────────────────────────────────────────────────
+// 3. HELPERS
+// ────────────────────────────────────────────────────────────────
+
+/** Read a numeric input value directly from the DOM. */
+function n(id) {
+  const el = document.getElementById(id);
+  if (!el) return 0;
+  if (el.tagName === 'SELECT') return el.value;
+  return parseFloat(el.value) || 0;
 }
 
-function loadFromURL() {
-  const h = window.location.hash;
-  if (!h || !h.startsWith('#?')) return false;
-  try {
-    const p  = new URLSearchParams(h.slice(2));
-    vehicleType  = p.get('vt') || 'utility_van';
-    const base   = { ...DEFAULTS[vehicleType] };
-    p.forEach((v, k) => {
-      if (k === 'vt') return;
-      base[k] = isNaN(+v) ? v : +v;
-    });
-    state = base;
-    return true;
-  } catch { return false; }
+/** Update range slider label. Called from oninput on each slider. */
+function updateRange(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const val = parseFloat(el.value);
+  const fmt = Number.isInteger(val) ? val : val.toFixed(1);
+  const labels = {
+    residual_value_ice:       ['rv_ice_lbl',  'rv_ice_val'],
+    residual_value_bev:       ['rv_bev_lbl',  'rv_bev_val'],
+    fuel_price_escalation:    ['fuel_esc_lbl','fuel_esc_val'],
+    electricity_escalation:   ['elec_esc_lbl','elec_esc_val'],
+    infrastructure_tax_credit:['itc_lbl',     'itc_val'],
+    sales_tax:                ['stax_lbl',    'stax_val'],
+    discount_rate:            ['dr_lbl',      'dr_val'],
+  };
+  const [lblId, valId] = labels[id] || [];
+  if (lblId) document.getElementById(lblId).textContent = fmt;
+  if (valId) document.getElementById(valId).textContent = fmt + '%';
 }
 
-// ────────────────────────────────────────────────────────────────
-// 3. RANGE DISPLAY HELPERS
-// ────────────────────────────────────────────────────────────────
-const RANGE_MAP = {
-  residual_value_ice:       ['rv_ice_lbl',  'rv_ice_val'],
-  residual_value_bev:       ['rv_bev_lbl',  'rv_bev_val'],
-  fuel_price_escalation:    ['fuel_esc_lbl','fuel_esc_val'],
-  electricity_escalation:   ['elec_esc_lbl','elec_esc_val'],
-  infrastructure_tax_credit:['itc_lbl',     'itc_val'],
-  sales_tax:                ['stax_lbl',    'stax_val'],
-  discount_rate:            ['dr_lbl',      'dr_val'],
-};
-
-function syncRange(id, val) {
-  const [lblId, valId] = RANGE_MAP[id] || [];
-  const fmt = Number.isInteger(+val) ? +val : (+val).toFixed(1);
-  if (lblId) { const el = document.getElementById(lblId); if (el) el.textContent = fmt; }
-  if (valId) { const el = document.getElementById(valId); if (el) el.textContent = fmt + '%'; }
-}
-
-// ────────────────────────────────────────────────────────────────
-// 4. DOM → STATE BINDING
-// ────────────────────────────────────────────────────────────────
-function bindInputs() {
-  Object.keys({ ...DEFAULTS.utility_van }).forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-
-    const update = () => {
-      const raw = el.type === 'range' || el.type === 'number' ? +el.value : el.value;
-      // Skip if the field is empty or produced NaN — keeps last good value
-      if (el.type === 'number' && (el.value === '' || isNaN(raw))) return;
-      state[id] = raw;
-      if (el.type === 'range') syncRange(id, raw);
-      if (id === 'analysis_period') {
-        document.getElementById('savings-yrs').textContent = raw;
-      }
-      calculate();
-      saveToURL();
-    };
-
-    // Fire on every keystroke for numbers AND on change/blur — whichever comes first
-    el.addEventListener('input', update);
-    el.addEventListener('change', update);
-  });
-}
-
-function setInputValues() {
-  Object.entries(state).forEach(([id, val]) => {
+/** Load defaults into DOM inputs. */
+function loadDefaults() {
+  const d = DEFAULTS[vehicleType];
+  Object.entries(d).forEach(([id, val]) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.value = val;
-    if (el.type === 'range') syncRange(id, val);
+    if (el.type === 'range') updateRange(id);
   });
-  document.getElementById('savings-yrs').textContent = state.analysis_period;
+  document.getElementById('savings-yrs').textContent = d.analysis_period;
   document.querySelectorAll('.tco-tab').forEach(t =>
     t.classList.toggle('active', t.dataset.vt === vehicleType)
   );
 }
 
-// ────────────────────────────────────────────────────────────────
-// 5. CALCULATION ENGINE
-// ────────────────────────────────────────────────────────────────
-
-/** Called by every input's oninput/onchange and the Calculate button. */
-function syncAndCalculate() {
-  // Sync range display labels before calculating
-  Object.keys(DEFAULTS[vehicleType]).forEach(id => {
-    const el = document.getElementById(id);
-    if (el && el.type === 'range') syncRange(id, el.value);
-  });
-  calculate();
-  saveToURL();
+/** Share URL — encode all current DOM values into hash. */
+function shareLink() {
+  const p = new URLSearchParams();
+  p.set('vt', vehicleType);
+  Object.keys(DEFAULTS[vehicleType]).forEach(id => p.set(id, n(id)));
+  history.replaceState(null, '', location.pathname + '#?' + p);
+  navigator.clipboard.writeText(location.href).then(() => {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }).catch(() => prompt('Copy this link:', location.href));
 }
+
+// ────────────────────────────────────────────────────────────────
+// 4. CALCULATION ENGINE — reads DOM directly every call
+// ────────────────────────────────────────────────────────────────
 
 /** Present value of an escalating annual cost stream. */
 function pvStream(cost1, escalPct, years, discPct) {
   const g = escalPct / 100, r = discPct / 100;
   let pv = 0;
-  for (let t = 1; t <= years; t++) {
-    pv += cost1 * Math.pow(1 + g, t - 1) / Math.pow(1 + r, t);
-  }
+  for (let t = 1; t <= years; t++) pv += cost1 * Math.pow(1+g, t-1) / Math.pow(1+r, t);
   return pv;
 }
-
-/** Present value of a flat annual cost. */
 const pvFlat = (c, y, r) => pvStream(c, 0, y, r);
 
-function getVal(id) {
-  const el = document.getElementById(id);
-  if (!el) return 0;
-  return el.type === 'select-one' ? el.value : (parseFloat(el.value) || 0);
-}
-
 function calculate() {
-  // Read every value directly from the DOM — no stale state possible
-  const s = {};
-  Object.keys(DEFAULTS[vehicleType]).forEach(id => { s[id] = getVal(id); });
-  state = s; // keep state in sync for URL saving etc.
-
-  const Y = s.analysis_period, M = s.annual_mileage, F = s.fleet_size, R = s.discount_rate;
+  // ── read everything straight from the page ──
+  const Y = n('analysis_period'), M = n('annual_mileage'),
+        F = n('fleet_size'),      R = n('discount_rate');
   const totalMiles = M * Y;
 
   /* ── ICE ── */
   const iceCapital =
-    s.ice_purchase_price * (1 + s.sales_tax / 100)
-    - (s.ice_purchase_price * s.residual_value_ice / 100) / Math.pow(1 + R/100, Y);
+    n('ice_purchase_price') * (1 + n('sales_tax') / 100)
+    - (n('ice_purchase_price') * n('residual_value_ice') / 100) / Math.pow(1 + R/100, Y);
 
-  const annFuel1     = (M / s.fuel_economy) * s.fuel_price;
-  const iceFuel      = pvStream(annFuel1, s.fuel_price_escalation, Y, R);
-  const iceMaint     = pvFlat(M * s.ice_maintenance_cost, Y, R);
-  const iceInsurance = pvFlat(s.ice_purchase_price * 0.03, Y, R);   // 3 % of MSRP/yr
-  const iceTaxes     = pvFlat((M / s.fuel_economy) * s.federal_excise_tax, Y, R);
+  const annFuel1     = (M / n('fuel_economy')) * n('fuel_price');
+  const iceFuel      = pvStream(annFuel1, n('fuel_price_escalation'), Y, R);
+  const iceMaint     = pvFlat(M * n('ice_maintenance_cost'), Y, R);
+  const iceInsurance = pvFlat(n('ice_purchase_price') * 0.03, Y, R);
+  const iceTaxes     = pvFlat((M / n('fuel_economy')) * n('federal_excise_tax'), Y, R);
 
   /* ── BEV ── */
   const bevCapital =
-    s.bev_purchase_price * (1 + s.sales_tax / 100)
-    - s.federal_tax_credit_bev
-    - s.statelocal_incentives_bev
-    - (s.bev_purchase_price * s.residual_value_bev / 100) / Math.pow(1 + R/100, Y);
+    n('bev_purchase_price') * (1 + n('sales_tax') / 100)
+    - n('federal_tax_credit_bev')
+    - n('statelocal_incentives_bev')
+    - (n('bev_purchase_price') * n('residual_value_bev') / 100) / Math.pow(1 + R/100, Y);
 
-  const annEnergy1   = M * s.electric_efficiency * s.electricity_rate
-                       + s.demand_charge_monthly * 12;
-  const bevEnergy    = pvStream(annEnergy1, s.electricity_escalation, Y, R);
-  const bevMaint     = pvFlat(M * s.bev_maintenance_cost, Y, R);
+  const annEnergy1 = M * n('electric_efficiency') * n('electricity_rate') + n('demand_charge_monthly') * 12;
+  const bevEnergy  = pvStream(annEnergy1, n('electricity_escalation'), Y, R);
+  const bevMaint   = pvFlat(M * n('bev_maintenance_cost'), Y, R);
 
-  // Infrastructure amortised per vehicle
-  const infraNet     = s.charger_cost * s.number_of_chargers
-                       * (1 - s.infrastructure_tax_credit / 100);
-  const infraAnnual  = (infraNet / s.infrastructure_useful_life
-                       + s.charger_maintenance * s.number_of_chargers) / F;
-  const bevInfra     = pvFlat(infraAnnual, Y, R);
+  const infraNet    = n('charger_cost') * n('number_of_chargers') * (1 - n('infrastructure_tax_credit') / 100);
+  const infraAnnual = (infraNet / n('infrastructure_useful_life') + n('charger_maintenance') * n('number_of_chargers')) / F;
+  const bevInfra    = pvFlat(infraAnnual, Y, R);
 
-  // Insurance (% more than ICE)
-  const bevInsurance = pvFlat(
-    s.ice_purchase_price * 0.03 * (1 + s.insurance_premium_diff / 100), Y, R
-  );
+  const bevInsurance = pvFlat(n('ice_purchase_price') * 0.03 * (1 + n('insurance_premium_diff') / 100), Y, R);
 
-  // Charging labour
-  const chargesPerYr = M / (s.battery_capacity / s.electric_efficiency);
-  const bevLabor     = pvFlat(chargesPerYr * s.charging_time_per_cycle * s.driver_labor_cost, Y, R);
+  const chargesPerYr = M / (n('battery_capacity') / n('electric_efficiency'));
+  const bevLabor     = pvFlat(chargesPerYr * n('charging_time_per_cycle') * n('driver_labor_cost'), Y, R);
 
-  // Battery replacement (lump sum, if warranty < analysis period)
-  const bevBattery   = Y > s.battery_warranty_period
-    ? s.battery_replacement_cost / Math.pow(1 + R/100, s.battery_warranty_period)
-    : 0;
+  const bevBattery = Y > n('battery_warranty_period')
+    ? n('battery_replacement_cost') / Math.pow(1 + R/100, n('battery_warranty_period')) : 0;
 
   /* ── Totals ── */
   const ice = { capital: iceCapital, fuel: iceFuel, maintenance: iceMaint, insurance: iceInsurance, taxes: iceTaxes };
@@ -1154,8 +1098,8 @@ function calculate() {
   const iceTotal = Object.values(ice).reduce((a, b) => a + b, 0);
   const bevTotal = Object.values(bev).reduce((a, b) => a + b, 0);
 
-  /* ── Yearly cumulative (nominal) for line chart ── */
-  const yearly = yearlyNominal(s, Y, M, F);
+  /* ── Yearly cumulative for line chart ── */
+  const yearly = yearlyNominal(Y, M, F);
 
   /* ── Break-even ── */
   let breakeven = null;
@@ -1166,40 +1110,40 @@ function calculate() {
   render({ ice, bev, iceTotal, bevTotal, totalMiles, Y, yearly, breakeven });
 }
 
-function yearlyNominal(s, Y, M, F) {
+function yearlyNominal(Y, M, F) {
   const infraAnnual = (
-    s.charger_cost * s.number_of_chargers * (1 - s.infrastructure_tax_credit / 100)
-    / s.infrastructure_useful_life
-    + s.charger_maintenance * s.number_of_chargers
+    n('charger_cost') * n('number_of_chargers') * (1 - n('infrastructure_tax_credit') / 100)
+    / n('infrastructure_useful_life')
+    + n('charger_maintenance') * n('number_of_chargers')
   ) / F;
 
-  const chargesPerYr = M / (s.battery_capacity / s.electric_efficiency);
+  const chargesPerYr = M / (n('battery_capacity') / n('electric_efficiency'));
 
-  let iceR = s.ice_purchase_price * (1 + s.sales_tax / 100);
-  let bevR = s.bev_purchase_price * (1 + s.sales_tax / 100)
-             - s.federal_tax_credit_bev
-             - s.statelocal_incentives_bev;
+  let iceR = n('ice_purchase_price') * (1 + n('sales_tax') / 100);
+  let bevR = n('bev_purchase_price') * (1 + n('sales_tax') / 100)
+             - n('federal_tax_credit_bev')
+             - n('statelocal_incentives_bev');
 
   return Array.from({ length: Y }, (_, i) => {
     const t = i + 1;
 
-    iceR += (M / s.fuel_economy) * s.fuel_price * Math.pow(1 + s.fuel_price_escalation/100, i)
-          + M * s.ice_maintenance_cost
-          + s.ice_purchase_price * 0.03
-          + (M / s.fuel_economy) * s.federal_excise_tax;
+    iceR += (M / n('fuel_economy')) * n('fuel_price') * Math.pow(1 + n('fuel_price_escalation')/100, i)
+          + M * n('ice_maintenance_cost')
+          + n('ice_purchase_price') * 0.03
+          + (M / n('fuel_economy')) * n('federal_excise_tax');
 
-    bevR += (M * s.electric_efficiency * s.electricity_rate * Math.pow(1 + s.electricity_escalation/100, i)
-             + s.demand_charge_monthly * 12)
-          + M * s.bev_maintenance_cost
+    bevR += (M * n('electric_efficiency') * n('electricity_rate') * Math.pow(1 + n('electricity_escalation')/100, i)
+             + n('demand_charge_monthly') * 12)
+          + M * n('bev_maintenance_cost')
           + infraAnnual
-          + s.ice_purchase_price * 0.03 * (1 + s.insurance_premium_diff/100)
-          + chargesPerYr * s.charging_time_per_cycle * s.driver_labor_cost
-          + (t === s.battery_warranty_period + 1 && Y > s.battery_warranty_period
-              ? s.battery_replacement_cost : 0);
+          + n('ice_purchase_price') * 0.03 * (1 + n('insurance_premium_diff')/100)
+          + chargesPerYr * n('charging_time_per_cycle') * n('driver_labor_cost')
+          + (t === n('battery_warranty_period') + 1 && Y > n('battery_warranty_period')
+              ? n('battery_replacement_cost') : 0);
 
     if (t === Y) {
-      iceR -= s.ice_purchase_price * s.residual_value_ice / 100;
-      bevR -= s.bev_purchase_price * s.residual_value_bev / 100;
+      iceR -= n('ice_purchase_price') * n('residual_value_ice') / 100;
+      bevR -= n('bev_purchase_price') * n('residual_value_bev') / 100;
     }
 
     return { year: t, ice: iceR, bev: bevR };
@@ -1387,13 +1331,11 @@ function renderTable(ice, bev, iceTotal, bevTotal) {
 // ────────────────────────────────────────────────────────────────
 // 7. UI ACTIONS
 // ────────────────────────────────────────────────────────────────
-function setVehicleType(vt, el) {
+function setVehicleType(vt, tabEl) {
   vehicleType = vt;
-  state = { ...DEFAULTS[vt] };
-  document.querySelectorAll('.tco-tab').forEach(t => t.classList.toggle('active', t === el));
-  setInputValues();
+  document.querySelectorAll('.tco-tab').forEach(t => t.classList.toggle('active', t === tabEl));
+  loadDefaults();
   calculate();
-  saveToURL();
 }
 
 function toggleCard(id) {
@@ -1401,31 +1343,15 @@ function toggleCard(id) {
 }
 
 function resetDefaults() {
-  state = { ...DEFAULTS[vehicleType] };
-  setInputValues();
+  loadDefaults();
   calculate();
-  saveToURL();
-}
-
-function shareLink() {
-  navigator.clipboard.writeText(window.location.href).then(() => {
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
-  }).catch(() => {
-    prompt('Copy this link:', window.location.href);
-  });
 }
 
 // ────────────────────────────────────────────────────────────────
 // 8. INIT
 // ────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  if (!loadFromURL()) {
-    state = { ...DEFAULTS[vehicleType] };
-  }
-  setInputValues();
-  bindInputs();
+  loadDefaults();
   calculate();
 });
 </script>

@@ -1,1363 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fleet EV TCO Calculator | Camber</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* ================================================================
-       CAMBER BRAND TOKENS — swap these 6 values to match your palette
-       ================================================================ */
-    :root {
-      --c-primary:       #0F3D5C;   /* deep navy  — main headings, header bg */
-      --c-accent:        #00A878;   /* teal green — buttons, highlights, BEV */
-      --c-accent-lt:     #E6F7F2;   /* light tint of accent */
-      --c-ice:           #64748B;   /* slate — ICE/conventional label color  */
-      --c-bg:            #F8FAFC;   /* page background                       */
-      --c-card:          #FFFFFF;   /* card background                       */
-      --c-text:          #1E293B;   /* primary text                          */
-      --c-muted:         #64748B;   /* secondary / label text                */
-      --c-border:        #E2E8F0;   /* dividers, input borders               */
-      --c-danger:        #DC2626;   /* "costs more" indicator                */
-      --c-success:       #16A34A;   /* "saves money" indicator               */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet EV TCO Calculator | Camber</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 20px; color: #1a1a2e; }
+  h1 { color: #0F3D5C; margin-bottom: 4px; }
+  .subtitle { color: #666; margin-bottom: 24px; }
+  .layout { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+  @media(max-width:900px){ .layout { grid-template-columns: 1fr; } }
+  .panel { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .section-title { font-weight: bold; font-size: 14px; color: #0F3D5C; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; margin: 16px 0 12px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+  .field { display: flex; flex-direction: column; margin-bottom: 10px; }
+  label { font-size: 12px; color: #555; margin-bottom: 4px; font-weight: 600; }
+  input[type=number] { padding: 8px 10px; border: 1px solid #d0d7e3; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; }
+  input[type=number]:focus { outline: none; border-color: #00A878; box-shadow: 0 0 0 3px rgba(0,168,120,0.15); }
+  .col-head { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding-bottom: 4px; margin-bottom: 8px; border-bottom: 2px solid; }
+  .ice-head { color: #64748B; border-color: #64748B; }
+  .bev-head { color: #00A878; border-color: #00A878; }
 
-      /* Category palette for charts & table dots */
-      --cat-vehicle:     #3B82F6;
-      --cat-fuel:        #F59E0B;
-      --cat-maint:       #10B981;
-      --cat-infra:       #8B5CF6;
-      --cat-insurance:   #EC4899;
-      --cat-labor:       #F97316;
-      --cat-battery:     #14B8A6;
-      --cat-taxes:       #9CA3AF;
+  /* Results */
+  .hero { background: linear-gradient(135deg, #0F3D5C, #1a5c8a); color: #fff; border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .hero-label { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; opacity: .75; }
+  .hero-amount { font-size: 2rem; font-weight: 800; margin: 6px 0 4px; }
+  .hero-sub { font-size: 13px; opacity: .8; }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .metric { background: rgba(255,255,255,.15); border-radius: 8px; padding: 10px; text-align: center; }
+  .metric-val { font-size: 1.1rem; font-weight: 700; }
+  .metric-lbl { font-size: 11px; opacity: .75; margin-top: 3px; }
 
-      --radius:    0.75rem;
-      --shadow-sm: 0 1px 3px 0 rgb(0 0 0/0.08), 0 1px 2px -1px rgb(0 0 0/0.06);
-      --shadow-md: 0 4px 12px -2px rgb(0 0 0/0.10), 0 2px 4px -2px rgb(0 0 0/0.06);
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
+  .breakdown { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .breakdown h3 { font-size: 14px; color: #0F3D5C; margin: 0 0 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #888; padding: 6px 8px; border-bottom: 1px solid #e2e8f0; }
+  th:not(:first-child) { text-align: right; }
+  td { padding: 8px 8px; border-bottom: 1px solid #f0f4f8; }
+  td:not(:first-child) { text-align: right; }
+  tr.total td { font-weight: 800; background: #f8fafc; border-top: 2px solid #e2e8f0; }
+  .ice-val { color: #64748B; }
+  .bev-val { color: #00A878; font-weight: 600; }
+  .save { color: #16A34A; font-weight: 600; }
+  .cost { color: #DC2626; font-weight: 600; }
 
-    /* ── Reset ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); line-height: 1.5; font-size: 14px; }
-    button { font-family: var(--font); }
-    input, select { font-family: var(--font); }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab { padding: 8px 18px; border-radius: 999px; border: 2px solid #e2e8f0; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; color: #64748B; }
+  .tab.active { background: #0F3D5C; border-color: #0F3D5C; color: #fff; }
+  .tab:hover:not(.active) { border-color: #00A878; color: #00A878; }
 
-    /* ================================================================
-       PAGE LAYOUT
-       ================================================================ */
-    .tco-wrap {
-      max-width: 1360px;
-      margin: 0 auto;
-      padding: 1.5rem 1.25rem 3rem;
-    }
-
-    /* Header */
-    .tco-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .tco-header-logo { height: 36px; margin-bottom: 0.5rem; }
-    .tco-header h1 {
-      font-size: 1.375rem;
-      font-weight: 700;
-      color: var(--c-primary);
-      line-height: 1.25;
-    }
-    .tco-header p {
-      font-size: 0.8125rem;
-      color: var(--c-muted);
-      margin-top: 0.25rem;
-    }
-    .tco-header-actions { display: flex; gap: 0.5rem; flex-shrink: 0; padding-top: 0.25rem; }
-
-    /* Vehicle type tabs */
-    .tco-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-    .tco-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 1.125rem;
-      border: 2px solid var(--c-border);
-      border-radius: 9999px;
-      background: var(--c-card);
-      color: var(--c-muted);
-      font-size: 0.8125rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.18s;
-    }
-    .tco-tab:hover { border-color: var(--c-accent); color: var(--c-accent); }
-    .tco-tab.active { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
-
-    /* Two-column main */
-    .tco-main {
-      display: grid;
-      grid-template-columns: 400px 1fr;
-      gap: 1.25rem;
-      align-items: start;
-    }
-    @media (max-width: 960px) { .tco-main { grid-template-columns: 1fr; } }
-
-    /* Results sticky */
-    .tco-results {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      position: sticky;
-      top: 1rem;
-    }
-    @media (max-width: 960px) { .tco-results { position: static; } }
-
-    /* Inputs list */
-    .tco-inputs { display: flex; flex-direction: column; gap: 0.875rem; }
-
-    /* ================================================================
-       CARD
-       ================================================================ */
-    .card {
-      background: var(--c-card);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-    .card-hd {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--c-border);
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.15s;
-    }
-    .card-hd:hover { background: #f9fafb; }
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--c-text);
-    }
-    .card-chevron {
-      font-size: 0.625rem;
-      color: var(--c-muted);
-      transition: transform 0.2s;
-    }
-    .card.collapsed .card-body { display: none; }
-    .card.collapsed .card-chevron { transform: rotate(-90deg); }
-    .card-body { padding: 1rem; }
-
-    /* ================================================================
-       FORM CONTROLS
-       ================================================================ */
-
-    /* Two equal columns (ICE | BEV) */
-    .col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
-
-    .col-hd {
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding-bottom: 0.375rem;
-      margin-bottom: 0.75rem;
-      border-bottom: 2px solid;
-      white-space: nowrap;
-    }
-    .col-hd.ice { color: var(--c-ice); border-color: var(--c-ice); }
-    .col-hd.bev { color: var(--c-accent); border-color: var(--c-accent); }
-
-    .field { margin-bottom: 0.75rem; }
-    .field label {
-      display: block;
-      font-size: 0.6875rem;
-      font-weight: 500;
-      color: var(--c-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    /* Input with optional prefix/suffix adornment */
-    .input-wrap { position: relative; }
-    .input-wrap .adorn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.8125rem;
-      color: var(--c-muted);
-      pointer-events: none;
-      z-index: 1;
-    }
-    .input-wrap .adorn.left  { left: 0.5625rem; }
-    .input-wrap .adorn.right { right: 0.5625rem; }
-    .input-wrap.pl input  { padding-left:  1.5rem; }
-    .input-wrap.pr input  { padding-right: 2.75rem; }
-    .input-wrap.pr2 input { padding-right: 3.25rem; }
-
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 0.4375rem 0.625rem;
-      border: 1px solid var(--c-border);
-      border-radius: 0.375rem;
-      font-size: 0.8125rem;
-      color: var(--c-text);
-      background: var(--c-bg);
-      transition: border-color 0.15s, box-shadow 0.15s;
-      -moz-appearance: textfield;
-    }
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-    input[type="number"]:focus,
-    select:focus {
-      outline: none;
-      border-color: var(--c-accent);
-      box-shadow: 0 0 0 3px rgba(0,168,120,0.15);
-    }
-
-    /* Range slider */
-    .range-row { display: flex; align-items: center; gap: 0.5rem; }
-    .range-row input[type="range"] {
-      flex: 1;
-      height: 4px;
-      accent-color: var(--c-accent);
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      box-shadow: none;
-      padding: 0;
-    }
-    .range-row input[type="range"]:focus { box-shadow: none; outline: none; }
-    .range-val {
-      min-width: 3.25rem;
-      text-align: right;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--c-text);
-    }
-
-    /* Row of two fields */
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
-
-    hr.div { border: none; border-top: 1px solid var(--c-border); margin: 0.75rem 0; }
-
-    /* ================================================================
-       BUTTONS
-       ================================================================ */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      padding: 0.4375rem 0.875rem;
-      border-radius: 0.375rem;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: 1px solid transparent;
-      line-height: 1.4;
-    }
-    .btn-primary  { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
-    .btn-primary:hover  { filter: brightness(1.08); }
-    .btn-outline  { background: transparent; color: var(--c-muted); border-color: var(--c-border); }
-    .btn-outline:hover  { border-color: var(--c-accent); color: var(--c-accent); }
-
-    .tco-actions { display: flex; gap: 0.5rem; padding-top: 0.25rem; flex-wrap: wrap; }
-
-    /* ================================================================
-       SAVINGS HERO CARD
-       ================================================================ */
-    .savings-card {
-      background: linear-gradient(135deg, var(--c-primary) 0%, #1a5c8a 100%);
-      color: #fff;
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      box-shadow: var(--shadow-md);
-    }
-    .savings-card.neutral {
-      background: linear-gradient(135deg, #475569 0%, #334155 100%);
-    }
-    .savings-label {
-      font-size: 0.6875rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      opacity: 0.75;
-      margin-bottom: 0.25rem;
-    }
-    .savings-amount {
-      font-size: 1.875rem;
-      font-weight: 700;
-      line-height: 1.15;
-    }
-    .savings-sub {
-      font-size: 0.75rem;
-      opacity: 0.8;
-      margin-top: 0.25rem;
-    }
-    .savings-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.625rem;
-      margin-top: 1rem;
-    }
-    .metric {
-      background: rgba(255,255,255,0.14);
-      border-radius: 0.5rem;
-      padding: 0.5rem 0.375rem;
-      text-align: center;
-    }
-    .metric-val { font-size: 1.0625rem; font-weight: 700; }
-    .metric-lbl { font-size: 0.625rem; opacity: 0.75; margin-top: 0.125rem; line-height: 1.2; }
-
-    /* ================================================================
-       CHART CARDS
-       ================================================================ */
-    .chart-card h3 {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--c-text);
-      margin-bottom: 0.75rem;
-    }
-    canvas { max-height: 220px; }
-
-    /* ================================================================
-       BREAKDOWN TABLE
-       ================================================================ */
-    .tco-table-wrap { overflow-x: auto; }
-    .tco-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
-    }
-    .tco-table th {
-      padding: 0.4rem 0.625rem;
-      font-size: 0.625rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--c-muted);
-      border-bottom: 1px solid var(--c-border);
-      text-align: left;
-    }
-    .tco-table th:not(:first-child) { text-align: right; }
-    .tco-table td {
-      padding: 0.4375rem 0.625rem;
-      border-bottom: 1px solid var(--c-border);
-      vertical-align: middle;
-    }
-    .tco-table td:not(:first-child) { text-align: right; }
-    .tco-table tr.total-row td {
-      font-weight: 700;
-      background: var(--c-bg);
-      border-top: 2px solid var(--c-border);
-      border-bottom: none;
-    }
-    .dot {
-      display: inline-block;
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      margin-right: 0.35rem;
-      vertical-align: middle;
-      flex-shrink: 0;
-    }
-    .cell-bev { color: var(--c-accent); font-weight: 600; }
-    .cell-ice { color: var(--c-muted); }
-
-    /* ================================================================
-       TOAST
-       ================================================================ */
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--c-primary);
-      color: #fff;
-      padding: 0.625rem 1.125rem;
-      border-radius: 0.5rem;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      box-shadow: var(--shadow-md);
-      transform: translateY(5rem);
-      opacity: 0;
-      transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    /* ================================================================
-       DISCLAIMER
-       ================================================================ */
-    .disclaimer {
-      font-size: 0.6875rem;
-      color: var(--c-muted);
-      text-align: center;
-      padding: 1.5rem 0 0;
-      line-height: 1.6;
-    }
-  </style>
+  .note { font-size: 11px; color: #999; text-align: center; margin-top: 20px; }
+</style>
 </head>
 <body>
-<div class="tco-wrap">
 
-  <!-- ── HEADER ─────────────────────────────────────────────────── -->
-  <div class="tco-header">
-    <div>
-      <!--
-        Replace the src below with your actual logo URL, e.g.:
-        src="https://cambercharging.com/wp-content/uploads/2024/02/camberlight-1.png"
-      -->
-      <img
-        src="https://cambercharging.com/wp-content/uploads/2024/02/camberlight-1.png"
-        alt="Camber"
-        class="tco-header-logo"
-        onerror="this.style.display='none'"
-      >
-      <h1>Fleet EV TCO Calculator</h1>
-      <p>Compare the lifetime cost of conventional vs. electric fleet vehicles — adjust any input to update instantly.</p>
+<h1>Fleet EV TCO Calculator</h1>
+<p class="subtitle">Compare lifetime cost of conventional vs. electric fleet vehicles. Every input updates results instantly.</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="setType('van',this)">🚐 Utility Van</button>
+  <button class="tab" onclick="setType('bus',this)">🚌 Transit Bus</button>
+</div>
+
+<div class="layout">
+
+  <!-- INPUTS -->
+  <div class="panel">
+
+    <div class="section-title">📊 Fleet Overview</div>
+    <div class="row">
+      <div class="field"><label>Fleet size (vehicles)</label><input type="number" id="fleet" value="10" min="1" oninput="calc()"></div>
+      <div class="field"><label>Analysis period (years)</label><input type="number" id="years" value="10" min="1" max="20" oninput="calc()"></div>
     </div>
-    <div class="tco-header-actions">
-      <button class="btn btn-outline" onclick="resetDefaults()">↺ Reset</button>
-      <button class="btn btn-primary"  onclick="shareLink()">⎘ Share</button>
+    <div class="field"><label>Annual miles per vehicle</label><input type="number" id="miles" value="20000" min="1000" oninput="calc()"></div>
+    <div class="field"><label>Discount rate (%)</label><input type="number" id="rate" value="5" min="0" max="15" step="0.5" oninput="calc()"></div>
+
+    <div class="section-title">🚗 Vehicle Purchase Price</div>
+    <div class="row">
+      <div class="field"><div class="col-head ice-head">Conventional</div><label>Price ($)</label><input type="number" id="ice_price" value="42000" oninput="calc()"></div>
+      <div class="field"><div class="col-head bev-head">Electric</div><label>Price ($)</label><input type="number" id="bev_price" value="62000" oninput="calc()"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>ICE residual value (%)</label><input type="number" id="ice_rv" value="30" min="0" max="60" oninput="calc()"></div>
+      <div class="field"><label>EV residual value (%)</label><input type="number" id="bev_rv" value="25" min="0" max="60" oninput="calc()"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Sales tax (%)</label><input type="number" id="tax" value="7.5" step="0.25" oninput="calc()"></div>
+      <div class="field"><label>Federal EV credit ($)</label><input type="number" id="ev_credit" value="7500" oninput="calc()"></div>
+    </div>
+    <div class="field"><label>State / local EV incentives ($)</label><input type="number" id="ev_local" value="0" oninput="calc()"></div>
+
+    <div class="section-title">⚡ Fuel &amp; Energy</div>
+    <div class="row">
+      <div class="field"><label>Fuel economy (MPG)</label><input type="number" id="mpg" value="18" min="1" oninput="calc()"></div>
+      <div class="field"><label>Fuel price ($/gal)</label><input type="number" id="fuel" value="3.80" step="0.05" oninput="calc()"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>EV efficiency (kWh/mi)</label><input type="number" id="kwh" value="0.38" step="0.01" oninput="calc()"></div>
+      <div class="field"><label>Electricity rate ($/kWh)</label><input type="number" id="elec" value="0.13" step="0.01" oninput="calc()"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Fuel price escalation (%/yr)</label><input type="number" id="fuel_esc" value="2.5" step="0.5" oninput="calc()"></div>
+      <div class="field"><label>Electricity escalation (%/yr)</label><input type="number" id="elec_esc" value="1.5" step="0.5" oninput="calc()"></div>
+    </div>
+
+    <div class="section-title">🔧 Maintenance</div>
+    <div class="row">
+      <div class="field"><label>ICE maintenance ($/mi)</label><input type="number" id="ice_maint" value="0.12" step="0.01" oninput="calc()"></div>
+      <div class="field"><label>EV maintenance ($/mi)</label><input type="number" id="bev_maint" value="0.07" step="0.01" oninput="calc()"></div>
+    </div>
+
+    <div class="section-title">🔌 Charging Infrastructure</div>
+    <div class="row">
+      <div class="field"><label>Charger cost installed ($)</label><input type="number" id="charger" value="6000" oninput="calc()"></div>
+      <div class="field"><label>Number of chargers</label><input type="number" id="n_chargers" value="5" min="1" oninput="calc()"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Infrastructure tax credit (%)</label><input type="number" id="itc" value="30" min="0" max="50" oninput="calc()"></div>
+      <div class="field"><label>Charger life (years)</label><input type="number" id="charger_life" value="15" oninput="calc()"></div>
+    </div>
+
+  </div>
+
+  <!-- RESULTS -->
+  <div>
+    <div class="hero" id="hero">
+      <div class="hero-label">Switching to EV</div>
+      <div class="hero-amount" id="r-amount">—</div>
+      <div class="hero-sub" id="r-sub">per vehicle over <span id="r-yrs">10</span> years (NPV)</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-val" id="r-ice-cpm">—</div><div class="metric-lbl">ICE ¢/mile</div></div>
+        <div class="metric"><div class="metric-val" id="r-bev-cpm">—</div><div class="metric-lbl">EV ¢/mile</div></div>
+        <div class="metric"><div class="metric-val" id="r-breakeven">—</div><div class="metric-lbl">Breakeven year</div></div>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <h3>Cost Breakdown per Vehicle (NPV)</h3>
+      <table>
+        <thead><tr><th>Category</th><th>Conventional</th><th>Electric</th><th>Difference</th></tr></thead>
+        <tbody id="r-table"></tbody>
+      </table>
     </div>
   </div>
 
-  <!-- ── VEHICLE TYPE TABS ──────────────────────────────────────── -->
-  <div class="tco-tabs" role="tablist">
-    <button class="tco-tab active" data-vt="utility_van"  onclick="setVehicleType('utility_van',  this)">🚐 Utility Van</button>
-    <button class="tco-tab"        data-vt="transit_bus"  onclick="setVehicleType('transit_bus',  this)">🚌 Transit Bus</button>
-  </div>
+</div>
 
-  <!-- ── MAIN GRID ──────────────────────────────────────────────── -->
-  <div class="tco-main">
-
-    <!-- ════════════════ INPUTS ════════════════ -->
-    <div class="tco-inputs">
-
-      <!-- Fleet Overview -->
-      <div class="card" id="sec-overview">
-        <div class="card-hd" onclick="toggleCard('sec-overview')">
-          <div class="card-title">📊 Fleet Overview</div>
-          <span class="card-chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="field-row">
-            <div class="field">
-              <label>Fleet size (vehicles)</label>
-              <input type="number" id="fleet_size" min="1" max="5000" step="1" oninput="calculate()">
-            </div>
-            <div class="field">
-              <label>Analysis period (years)</label>
-              <input type="number" id="analysis_period" min="1" max="20" step="1" oninput="calculate()">
-            </div>
-          </div>
-          <div class="field">
-            <label>Annual mileage per vehicle</label>
-            <div class="input-wrap pr">
-              <input type="number" id="annual_mileage" min="1000" max="200000" step="1000" oninput="calculate()">
-              <span class="adorn right">mi/yr</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Vehicle Specs -->
-      <div class="card" id="sec-vehicle">
-        <div class="card-hd" onclick="toggleCard('sec-vehicle')">
-          <div class="card-title">🚗 Vehicle Specs</div>
-          <span class="card-chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="col2">
-            <!-- ICE column -->
-            <div>
-              <div class="col-hd ice">Conventional</div>
-              <div class="field">
-                <label>Purchase price</label>
-                <div class="input-wrap pl">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="ice_purchase_price" min="0" step="500" oninput="calculate()">
-                </div>
-              </div>
-              <div class="field">
-                <label>Fuel type</label>
-                <select id="fuel_type" onchange="syncAndCalculate()">
-                  <option value="gasoline">Gasoline</option>
-                  <option value="diesel">Diesel</option>
-                  <option value="cng">CNG</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Fuel economy</label>
-                <div class="input-wrap pr">
-                  <input type="number" id="fuel_economy" min="0.5" step="0.5" oninput="calculate()">
-                  <span class="adorn right">MPG</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Maintenance ($/mi)</label>
-                <div class="input-wrap pl">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="ice_maintenance_cost" min="0" step="0.005" oninput="calculate()">
-                </div>
-              </div>
-              <div class="field">
-                <label>Residual value — <b id="rv_ice_lbl">30</b>%</label>
-                <div class="range-row">
-                  <input type="range" id="residual_value_ice" min="0" max="60" step="1" oninput="updateRange(this.id);calculate()">
-                  <span class="range-val" id="rv_ice_val">30%</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- BEV column -->
-            <div>
-              <div class="col-hd bev">Battery Electric</div>
-              <div class="field">
-                <label>Purchase price</label>
-                <div class="input-wrap pl">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="bev_purchase_price" min="0" step="500" oninput="calculate()">
-                </div>
-              </div>
-              <div class="field">
-                <label>Efficiency</label>
-                <div class="input-wrap pr2">
-                  <input type="number" id="electric_efficiency" min="0.05" step="0.01" oninput="calculate()">
-                  <span class="adorn right">kWh/mi</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Battery capacity</label>
-                <div class="input-wrap pr">
-                  <input type="number" id="battery_capacity" min="10" step="5" oninput="calculate()">
-                  <span class="adorn right">kWh</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Maintenance ($/mi)</label>
-                <div class="input-wrap pl">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="bev_maintenance_cost" min="0" step="0.005" oninput="calculate()">
-                </div>
-              </div>
-              <div class="field">
-                <label>Residual value — <b id="rv_bev_lbl">25</b>%</label>
-                <div class="range-row">
-                  <input type="range" id="residual_value_bev" min="0" max="60" step="1" oninput="updateRange(this.id);calculate()">
-                  <span class="range-val" id="rv_bev_val">25%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <hr class="div">
-          <div class="field-row">
-            <div class="field">
-              <label>Battery replacement cost</label>
-              <div class="input-wrap pl">
-                <span class="adorn left">$</span>
-                <input type="number" id="battery_replacement_cost" min="0" step="1000" oninput="calculate()">
-              </div>
-            </div>
-            <div class="field">
-              <label>Battery warranty (yrs)</label>
-              <input type="number" id="battery_warranty_period" min="1" max="20" step="1" oninput="calculate()">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Fuel & Energy -->
-      <div class="card" id="sec-energy">
-        <div class="card-hd" onclick="toggleCard('sec-energy')">
-          <div class="card-title">⚡ Fuel &amp; Energy</div>
-          <span class="card-chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="col2">
-            <!-- Fuel -->
-            <div>
-              <div class="col-hd ice">Fuel</div>
-              <div class="field">
-                <label>Fuel price</label>
-                <div class="input-wrap pl pr">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="fuel_price" min="0" step="0.05" oninput="calculate()">
-                  <span class="adorn right">/gal</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Price escalation — <b id="fuel_esc_lbl">2.5</b>%/yr</label>
-                <div class="range-row">
-                  <input type="range" id="fuel_price_escalation" min="0" max="10" step="0.5" oninput="updateRange(this.id);calculate()">
-                  <span class="range-val" id="fuel_esc_val">2.5%</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Federal excise tax</label>
-                <div class="input-wrap pl pr">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="federal_excise_tax" min="0" step="0.001" oninput="calculate()">
-                  <span class="adorn right">/gal</span>
-                </div>
-              </div>
-            </div>
-            <!-- Electricity -->
-            <div>
-              <div class="col-hd bev">Electricity</div>
-              <div class="field">
-                <label>Electricity rate</label>
-                <div class="input-wrap pl pr2">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="electricity_rate" min="0" step="0.005" oninput="calculate()">
-                  <span class="adorn right">/kWh</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Rate escalation — <b id="elec_esc_lbl">1.5</b>%/yr</label>
-                <div class="range-row">
-                  <input type="range" id="electricity_escalation" min="0" max="10" step="0.5" oninput="updateRange(this.id);calculate()">
-                  <span class="range-val" id="elec_esc_val">1.5%</span>
-                </div>
-              </div>
-              <div class="field">
-                <label>Monthly demand charge</label>
-                <div class="input-wrap pl pr">
-                  <span class="adorn left">$</span>
-                  <input type="number" id="demand_charge_monthly" min="0" step="25" oninput="calculate()">
-                  <span class="adorn right">/mo</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Charging Infrastructure -->
-      <div class="card" id="sec-infra">
-        <div class="card-hd" onclick="toggleCard('sec-infra')">
-          <div class="card-title">🔌 Charging Infrastructure</div>
-          <span class="card-chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="field-row">
-            <div class="field">
-              <label>Charger cost (installed)</label>
-              <div class="input-wrap pl">
-                <span class="adorn left">$</span>
-                <input type="number" id="charger_cost" min="0" step="500" oninput="calculate()">
-              </div>
-            </div>
-            <div class="field">
-              <label>Number of chargers</label>
-              <input type="number" id="number_of_chargers" min="1" step="1" oninput="calculate()">
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label>Annual maintenance / charger</label>
-              <div class="input-wrap pl pr">
-                <span class="adorn left">$</span>
-                <input type="number" id="charger_maintenance" min="0" step="100" oninput="calculate()">
-                <span class="adorn right">/yr</span>
-              </div>
-            </div>
-            <div class="field">
-              <label>Useful life</label>
-              <div class="input-wrap pr">
-                <input type="number" id="infrastructure_useful_life" min="1" max="30" step="1" oninput="calculate()">
-                <span class="adorn right">yrs</span>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Infrastructure tax credit (ITC) — <b id="itc_lbl">30</b>%</label>
-            <div class="range-row">
-              <input type="range" id="infrastructure_tax_credit" min="0" max="50" step="1" oninput="updateRange(this.id);calculate()">
-              <span class="range-val" id="itc_val">30%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Incentives & Taxes -->
-      <div class="card" id="sec-incentives">
-        <div class="card-hd" onclick="toggleCard('sec-incentives')">
-          <div class="card-title">🏷️ Incentives &amp; Taxes</div>
-          <span class="card-chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="field-row">
-            <div class="field">
-              <label>Federal EV credit (IRA)</label>
-              <div class="input-wrap pl">
-                <span class="adorn left">$</span>
-                <input type="number" id="federal_tax_credit_bev" min="0" step="500" oninput="calculate()">
-              </div>
-            </div>
-            <div class="field">
-              <label>State / local incentives</label>
-              <div class="input-wrap pl">
-                <span class="adorn left">$</span>
-                <input type="number" id="statelocal_incentives_bev" min="0" step="500" oninput="calculate()">
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Sales tax — <b id="stax_lbl">7.5</b>%</label>
-            <div class="range-row">
-              <input type="range" id="sales_tax" min="0" max="15" step="0.25" oninput="updateRange(this.id);calculate()">
-              <span class="range-val" id="stax_val">7.5%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Financial & Operations -->
-      <div class="card" id="sec-financial">
-        <div class="card-hd" onclick="toggleCard('sec-financial')">
-          <div class="card-title">💰 Financial &amp; Operations</div>
-          <span class="card-chevron">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="field">
-            <label>Discount rate — <b id="dr_lbl">5.0</b>%</label>
-            <div class="range-row">
-              <input type="range" id="discount_rate" min="0" max="15" step="0.5" oninput="updateRange(this.id);calculate()">
-              <span class="range-val" id="dr_val">5.0%</span>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label>BEV insurance vs. ICE</label>
-              <div class="input-wrap pr2">
-                <input type="number" id="insurance_premium_diff" min="-50" max="150" step="1" oninput="calculate()">
-                <span class="adorn right">% more</span>
-              </div>
-            </div>
-            <div class="field">
-              <label>Driver labor rate</label>
-              <div class="input-wrap pl pr">
-                <span class="adorn left">$</span>
-                <input type="number" id="driver_labor_cost" min="0" step="1" oninput="calculate()">
-                <span class="adorn right">/hr</span>
-              </div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Charging time per session</label>
-            <div class="input-wrap pr">
-              <input type="number" id="charging_time_per_cycle" min="0" step="0.25" oninput="calculate()">
-              <span class="adorn right">hrs</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="tco-actions">
-        <button class="btn btn-outline" onclick="resetDefaults()">↺ Reset to defaults</button>
-        <button class="btn btn-primary" style="font-size:0.9375rem;padding:0.5rem 1.5rem;" onclick="syncAndCalculate()">▶ Calculate</button>
-        <button class="btn btn-outline"  onclick="shareLink()">⎘ Copy share link</button>
-      </div>
-
-    </div><!-- /tco-inputs -->
-
-
-    <!-- ════════════════ RESULTS ════════════════ -->
-    <div class="tco-results">
-
-      <!-- Savings hero -->
-      <div class="savings-card" id="savings-card">
-        <div class="savings-label">Switching to EV</div>
-        <div class="savings-amount" id="savings-amount">—</div>
-        <div class="savings-sub"   id="savings-sub">per vehicle over <span id="savings-yrs">10</span> years (NPV)</div>
-        <div class="savings-metrics">
-          <div class="metric">
-            <div class="metric-val" id="m-ice-cpm">—</div>
-            <div class="metric-lbl">ICE ¢/mile</div>
-          </div>
-          <div class="metric">
-            <div class="metric-val" id="m-bev-cpm">—</div>
-            <div class="metric-lbl">EV ¢/mile</div>
-          </div>
-          <div class="metric">
-            <div class="metric-val" id="m-breakeven">—</div>
-            <div class="metric-lbl">Breakeven<br>year</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bar chart -->
-      <div class="card">
-        <div class="card-body chart-card">
-          <h3>Cost Breakdown — ¢ per mile (NPV)</h3>
-          <canvas id="barChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Line chart -->
-      <div class="card">
-        <div class="card-body chart-card">
-          <h3>Cumulative Cost Over Time (per vehicle, nominal)</h3>
-          <canvas id="lineChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Table -->
-      <div class="card">
-        <div class="card-body">
-          <h3 style="font-size:0.8125rem;font-weight:600;margin-bottom:0.75rem">
-            Detailed Breakdown — per vehicle, NPV
-          </h3>
-          <div class="tco-table-wrap">
-            <table class="tco-table">
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Conventional</th>
-                  <th>Electric</th>
-                  <th>Δ (EV–ICE)</th>
-                </tr>
-              </thead>
-              <tbody id="tbl-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /tco-results -->
-  </div><!-- /tco-main -->
-
-  <p class="disclaimer">
-    Estimates for planning purposes only. Actual costs vary by region, usage patterns, financing terms, and policy changes.
-    Based on ICCT TCO methodology (Basma et al. 2022). Consult a tax advisor regarding incentive eligibility.
-    <br>Built by <a href="https://cambercharging.com" style="color:var(--c-accent)">Camber Charging</a> — Reliable EV Fleets.
-  </p>
-</div><!-- /tco-wrap -->
-
-<div class="toast" id="toast">✓ Share link copied to clipboard</div>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<p class="note">Estimates for planning purposes only. Based on ICCT TCO methodology. Built by <a href="https://cambercharging.com" style="color:#00A878">Camber Charging</a>.</p>
 
 <script>
-// CAMBER FLEET TCO CALCULATOR — v2.0
-// calculate() reads directly from DOM every time. No state object.
+var vtype = 'van';
 
-   ================================================================
-
-   ARCHITECTURE
-   ─────────────────────────────────────────────────────────────
-   DEFAULTS   → per-vehicle-type preset values
-   state      → current user-edited values (plain object)
-   URL hash   → serialised state for shareable links
-   bindInputs → wires DOM → state on every change
-   calculate  → pure NPV computation, returns cost objects
-   render*    → updates DOM / charts from results
-
-   COST MODEL (per vehicle, NPV)
-   ─────────────────────────────────────────────────────────────
-   ICE: vehicle_capital + fuel + maintenance + insurance + fuel_taxes
-   BEV: vehicle_capital + energy + maintenance + infrastructure
-        + insurance + labor + battery_replacement
-   ================================================================ */
-
-// ────────────────────────────────────────────────────────────────
-// 1. DEFAULTS
-// ────────────────────────────────────────────────────────────────
-const DEFAULTS = {
-
-  utility_van: {
-    // Fleet
-    fleet_size:               10,
-    annual_mileage:           20000,
-    analysis_period:          10,
-    // Conventional
-    ice_purchase_price:       42000,
-    fuel_type:                'gasoline',
-    fuel_economy:             18,
-    ice_maintenance_cost:     0.12,
-    residual_value_ice:       30,
-    fuel_price:               3.80,
-    fuel_price_escalation:    2.5,
-    federal_excise_tax:       0.184,   // federal gas excise $/gal
-    // BEV
-    bev_purchase_price:       62000,
-    electric_efficiency:      0.38,    // kWh/mi
-    battery_capacity:         68,      // kWh
-    bev_maintenance_cost:     0.07,
-    residual_value_bev:       25,
-    battery_replacement_cost: 18000,
-    battery_warranty_period:  8,
-    electricity_rate:         0.13,
-    electricity_escalation:   1.5,
-    demand_charge_monthly:    0,
-    // Infrastructure
-    charger_cost:             6000,
-    number_of_chargers:       5,
-    charger_maintenance:      500,
-    infrastructure_useful_life: 15,
-    infrastructure_tax_credit:  30,
-    // Incentives
-    federal_tax_credit_bev:   7500,    // IRA commercial vehicle credit
-    statelocal_incentives_bev:0,
-    sales_tax:                7.5,
-    // Financial & Ops
-    discount_rate:            5.0,
-    insurance_premium_diff:   15,      // % more than ICE
-    driver_labor_cost:        25,
-    charging_time_per_cycle:  5,       // hrs — overnight L2
-  },
-
-  transit_bus: {
-    // Fleet
-    fleet_size:               20,
-    annual_mileage:           40000,
-    analysis_period:          12,
-    // Conventional (diesel)
-    ice_purchase_price:       550000,
-    fuel_type:                'diesel',
-    fuel_economy:             4.5,
-    ice_maintenance_cost:     0.55,
-    residual_value_ice:       20,
-    fuel_price:               4.00,
-    fuel_price_escalation:    2.5,
-    federal_excise_tax:       0.244,   // federal diesel excise $/gal
-    // BEV
-    bev_purchase_price:       900000,
-    electric_efficiency:      2.2,
-    battery_capacity:         440,
-    bev_maintenance_cost:     0.30,
-    residual_value_bev:       15,
-    battery_replacement_cost: 150000,
-    battery_warranty_period:  8,
-    electricity_rate:         0.12,
-    electricity_escalation:   1.5,
-    demand_charge_monthly:    500,
-    // Infrastructure
-    charger_cost:             80000,
-    number_of_chargers:       10,
-    charger_maintenance:      3000,
-    infrastructure_useful_life: 15,
-    infrastructure_tax_credit:  30,
-    // Incentives
-    federal_tax_credit_bev:   40000,   // IRA heavy vehicle credit
-    statelocal_incentives_bev:50000,
-    sales_tax:                0,       // municipal purchasers often exempt
-    // Financial & Ops
-    discount_rate:            5.0,
-    insurance_premium_diff:   10,
-    driver_labor_cost:        35,
-    charging_time_per_cycle:  2,       // depot overnight + opportunity
-  },
-
+var DEFAULTS = {
+  van: { fleet:10, years:10, miles:20000, rate:5, ice_price:42000, bev_price:62000, ice_rv:30, bev_rv:25, tax:7.5, ev_credit:7500, ev_local:0, mpg:18, fuel:3.80, kwh:0.38, elec:0.13, fuel_esc:2.5, elec_esc:1.5, ice_maint:0.12, bev_maint:0.07, charger:6000, n_chargers:5, itc:30, charger_life:15 },
+  bus: { fleet:20, years:12, miles:40000, rate:5, ice_price:550000, bev_price:900000, ice_rv:20, bev_rv:15, tax:0, ev_credit:40000, ev_local:50000, mpg:4.5, fuel:4.00, kwh:2.2, elec:0.12, fuel_esc:2.5, elec_esc:1.5, ice_maint:0.55, bev_maint:0.30, charger:80000, n_chargers:10, itc:30, charger_life:15 }
 };
 
-// ────────────────────────────────────────────────────────────────
-// 2. GLOBALS
-// ────────────────────────────────────────────────────────────────
-let vehicleType  = 'utility_van';
-let barChartInst = null;
-let lineChartInst = null;
-
-// ────────────────────────────────────────────────────────────────
-// 3. HELPERS
-// ────────────────────────────────────────────────────────────────
-
-/** Read a numeric input value directly from the DOM. */
-function n(id) {
-  const el = document.getElementById(id);
-  if (!el) return 0;
-  if (el.tagName === 'SELECT') return el.value;
-  return parseFloat(el.value) || 0;
+function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(x) { return '$' + Math.round(Math.abs(x)).toLocaleString(); }
+function pv(cost, g, r, yrs) {
+  var total = 0;
+  for (var t = 1; t <= yrs; t++) total += cost * Math.pow(1+g/100, t-1) / Math.pow(1+r/100, t);
+  return total;
 }
 
-/** Update range slider label. Called from oninput on each slider. */
-function updateRange(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const val = parseFloat(el.value);
-  const fmt = Number.isInteger(val) ? val : val.toFixed(1);
-  const labels = {
-    residual_value_ice:       ['rv_ice_lbl',  'rv_ice_val'],
-    residual_value_bev:       ['rv_bev_lbl',  'rv_bev_val'],
-    fuel_price_escalation:    ['fuel_esc_lbl','fuel_esc_val'],
-    electricity_escalation:   ['elec_esc_lbl','elec_esc_val'],
-    infrastructure_tax_credit:['itc_lbl',     'itc_val'],
-    sales_tax:                ['stax_lbl',    'stax_val'],
-    discount_rate:            ['dr_lbl',      'dr_val'],
-  };
-  const [lblId, valId] = labels[id] || [];
-  if (lblId) document.getElementById(lblId).textContent = fmt;
-  if (valId) document.getElementById(valId).textContent = fmt + '%';
-}
+function calc() {
+  var Y = v('years'), M = v('miles'), F = v('fleet'), R = v('rate');
+  var tm = M * Y;
 
-/** Load defaults into DOM inputs. */
-function loadDefaults() {
-  const d = DEFAULTS[vehicleType];
-  Object.entries(d).forEach(([id, val]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.value = val;
-    if (el.type === 'range') updateRange(id);
-  });
-  document.getElementById('savings-yrs').textContent = d.analysis_period;
-  document.querySelectorAll('.tco-tab').forEach(t =>
-    t.classList.toggle('active', t.dataset.vt === vehicleType)
-  );
-}
+  // ICE costs
+  var ip = v('ice_price'), tx = v('tax')/100;
+  var ice_cap = ip*(1+tx) - (ip*v('ice_rv')/100)/Math.pow(1+R/100,Y);
+  var ice_fuel = pv((M/v('mpg'))*v('fuel'), v('fuel_esc'), R, Y);
+  var ice_maint = pv(M*v('ice_maint'), 0, R, Y);
+  var ice_ins = pv(ip*0.03, 0, R, Y);
+  var ice_total = ice_cap + ice_fuel + ice_maint + ice_ins;
 
-/** Share URL — encode all current DOM values into hash. */
-function shareLink() {
-  const p = new URLSearchParams();
-  p.set('vt', vehicleType);
-  Object.keys(DEFAULTS[vehicleType]).forEach(id => p.set(id, n(id)));
-  history.replaceState(null, '', location.pathname + '#?' + p);
-  navigator.clipboard.writeText(location.href).then(() => {
-    const t = document.getElementById('toast');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2600);
-  }).catch(() => prompt('Copy this link:', location.href));
-}
+  // BEV costs
+  var bp = v('bev_price');
+  var bev_cap = bp*(1+tx) - v('ev_credit') - v('ev_local') - (bp*v('bev_rv')/100)/Math.pow(1+R/100,Y);
+  var bev_energy = pv(M*v('kwh')*v('elec'), v('elec_esc'), R, Y);
+  var bev_maint = pv(M*v('bev_maint'), 0, R, Y);
+  var bev_ins = pv(ip*0.03*1.15, 0, R, Y);
+  var infra = (v('charger')*v('n_chargers')*(1-v('itc')/100)/v('charger_life')) / F;
+  var bev_infra = pv(infra, 0, R, Y);
+  var bev_total = bev_cap + bev_energy + bev_maint + bev_ins + bev_infra;
 
-// ────────────────────────────────────────────────────────────────
-// 4. CALCULATION ENGINE — reads DOM directly every call
-// ────────────────────────────────────────────────────────────────
+  var savings = ice_total - bev_total;
 
-/** Present value of an escalating annual cost stream. */
-function pvStream(cost1, escalPct, years, discPct) {
-  const g = escalPct / 100, r = discPct / 100;
-  let pv = 0;
-  for (let t = 1; t <= years; t++) pv += cost1 * Math.pow(1+g, t-1) / Math.pow(1+r, t);
-  return pv;
-}
-const pvFlat = (c, y, r) => pvStream(c, 0, y, r);
+  // Update hero
+  document.getElementById('r-yrs').textContent = Y;
+  document.getElementById('r-amount').textContent = savings >= 0
+    ? fmt(savings) + ' saved'
+    : fmt(-savings) + ' more expensive';
+  document.getElementById('r-sub').innerHTML = savings >= 0
+    ? 'saved by switching to EV per vehicle over <span id="r-yrs">' + Y + '</span> years (NPV)'
+    : 'EV costs more per vehicle over <span id="r-yrs">' + Y + '</span> years (NPV)';
+  document.getElementById('hero').style.background = savings >= 0
+    ? 'linear-gradient(135deg,#0F3D5C,#1a5c8a)'
+    : 'linear-gradient(135deg,#475569,#334155)';
 
-function calculate() {
-  try { _calculate(); } catch(e) {
-    document.getElementById('savings-amount').textContent = 'Error: ' + e.message;
+  document.getElementById('r-ice-cpm').textContent = ((ice_total/tm)*100).toFixed(1) + '¢';
+  document.getElementById('r-bev-cpm').textContent = ((bev_total/tm)*100).toFixed(1) + '¢';
+
+  // Breakeven
+  var ice_r = ip*(1+tx), bev_r = bp*(1+tx)-v('ev_credit')-v('ev_local');
+  var be = 'N/A';
+  for (var t = 1; t <= Y; t++) {
+    ice_r += (M/v('mpg'))*v('fuel')*Math.pow(1+v('fuel_esc')/100,t-1) + M*v('ice_maint') + ip*0.03;
+    bev_r += M*v('kwh')*v('elec')*Math.pow(1+v('elec_esc')/100,t-1) + M*v('bev_maint') + bev_infra*Math.pow(1+R/100,t) + ip*0.03*1.15;
+    if (bev_r <= ice_r) { be = 'Yr ' + t; break; }
   }
-}
-function _calculate() {
-  // ── read everything straight from the page ──
-  const Y = n('analysis_period'), M = n('annual_mileage'),
-        F = n('fleet_size'),      R = n('discount_rate');
-  const totalMiles = M * Y;
+  document.getElementById('r-breakeven').textContent = be;
 
-  /* ── ICE ── */
-  const iceCapital =
-    n('ice_purchase_price') * (1 + n('sales_tax') / 100)
-    - (n('ice_purchase_price') * n('residual_value_ice') / 100) / Math.pow(1 + R/100, Y);
-
-  const annFuel1     = (M / n('fuel_economy')) * n('fuel_price');
-  const iceFuel      = pvStream(annFuel1, n('fuel_price_escalation'), Y, R);
-  const iceMaint     = pvFlat(M * n('ice_maintenance_cost'), Y, R);
-  const iceInsurance = pvFlat(n('ice_purchase_price') * 0.03, Y, R);
-  const iceTaxes     = pvFlat((M / n('fuel_economy')) * n('federal_excise_tax'), Y, R);
-
-  /* ── BEV ── */
-  const bevCapital =
-    n('bev_purchase_price') * (1 + n('sales_tax') / 100)
-    - n('federal_tax_credit_bev')
-    - n('statelocal_incentives_bev')
-    - (n('bev_purchase_price') * n('residual_value_bev') / 100) / Math.pow(1 + R/100, Y);
-
-  const annEnergy1 = M * n('electric_efficiency') * n('electricity_rate') + n('demand_charge_monthly') * 12;
-  const bevEnergy  = pvStream(annEnergy1, n('electricity_escalation'), Y, R);
-  const bevMaint   = pvFlat(M * n('bev_maintenance_cost'), Y, R);
-
-  const infraNet    = n('charger_cost') * n('number_of_chargers') * (1 - n('infrastructure_tax_credit') / 100);
-  const infraAnnual = (infraNet / n('infrastructure_useful_life') + n('charger_maintenance') * n('number_of_chargers')) / F;
-  const bevInfra    = pvFlat(infraAnnual, Y, R);
-
-  const bevInsurance = pvFlat(n('ice_purchase_price') * 0.03 * (1 + n('insurance_premium_diff') / 100), Y, R);
-
-  const chargesPerYr = M / (n('battery_capacity') / n('electric_efficiency'));
-  const bevLabor     = pvFlat(chargesPerYr * n('charging_time_per_cycle') * n('driver_labor_cost'), Y, R);
-
-  const bevBattery = Y > n('battery_warranty_period')
-    ? n('battery_replacement_cost') / Math.pow(1 + R/100, n('battery_warranty_period')) : 0;
-
-  /* ── Totals ── */
-  const ice = { capital: iceCapital, fuel: iceFuel, maintenance: iceMaint, insurance: iceInsurance, taxes: iceTaxes };
-  const bev = { capital: bevCapital, energy: bevEnergy, maintenance: bevMaint, infrastructure: bevInfra, insurance: bevInsurance, labor: bevLabor, battery: bevBattery };
-
-  const iceTotal = Object.values(ice).reduce((a, b) => a + b, 0);
-  const bevTotal = Object.values(bev).reduce((a, b) => a + b, 0);
-
-  /* ── Yearly cumulative for line chart ── */
-  const yearly = yearlyNominal(Y, M, F);
-
-  /* ── Break-even ── */
-  let breakeven = null;
-  for (let i = 0; i < yearly.length; i++) {
-    if (yearly[i].bev <= yearly[i].ice) { breakeven = yearly[i].year; break; }
-  }
-
-  render({ ice, bev, iceTotal, bevTotal, totalMiles, Y, yearly, breakeven });
-}
-
-function yearlyNominal(Y, M, F) {
-  const infraAnnual = (
-    n('charger_cost') * n('number_of_chargers') * (1 - n('infrastructure_tax_credit') / 100)
-    / n('infrastructure_useful_life')
-    + n('charger_maintenance') * n('number_of_chargers')
-  ) / F;
-
-  const chargesPerYr = M / (n('battery_capacity') / n('electric_efficiency'));
-
-  let iceR = n('ice_purchase_price') * (1 + n('sales_tax') / 100);
-  let bevR = n('bev_purchase_price') * (1 + n('sales_tax') / 100)
-             - n('federal_tax_credit_bev')
-             - n('statelocal_incentives_bev');
-
-  return Array.from({ length: Y }, (_, i) => {
-    const t = i + 1;
-
-    iceR += (M / n('fuel_economy')) * n('fuel_price') * Math.pow(1 + n('fuel_price_escalation')/100, i)
-          + M * n('ice_maintenance_cost')
-          + n('ice_purchase_price') * 0.03
-          + (M / n('fuel_economy')) * n('federal_excise_tax');
-
-    bevR += (M * n('electric_efficiency') * n('electricity_rate') * Math.pow(1 + n('electricity_escalation')/100, i)
-             + n('demand_charge_monthly') * 12)
-          + M * n('bev_maintenance_cost')
-          + infraAnnual
-          + n('ice_purchase_price') * 0.03 * (1 + n('insurance_premium_diff')/100)
-          + chargesPerYr * n('charging_time_per_cycle') * n('driver_labor_cost')
-          + (t === n('battery_warranty_period') + 1 && Y > n('battery_warranty_period')
-              ? n('battery_replacement_cost') : 0);
-
-    if (t === Y) {
-      iceR -= n('ice_purchase_price') * n('residual_value_ice') / 100;
-      bevR -= n('bev_purchase_price') * n('residual_value_bev') / 100;
-    }
-
-    return { year: t, ice: iceR, bev: bevR };
+  // Table
+  var rows = [
+    ['Vehicle (net)', fmt(ice_cap), fmt(bev_cap), bev_cap-ice_cap],
+    ['Fuel / Energy', fmt(ice_fuel), fmt(bev_energy), bev_energy-ice_fuel],
+    ['Maintenance', fmt(ice_maint), fmt(bev_maint), bev_maint-ice_maint],
+    ['Insurance', fmt(ice_ins), fmt(bev_ins), bev_ins-ice_ins],
+    ['Infrastructure', '—', fmt(bev_infra), bev_infra],
+  ];
+  var html = '';
+  rows.forEach(function(r) {
+    var d = r[3], dc = d > 0 ? 'cost' : 'save';
+    html += '<tr><td>' + r[0] + '</td><td class="ice-val">' + r[1] + '</td><td class="bev-val">' + r[2] + '</td><td class="' + dc + '">' + (d>0?'+':'') + fmt(d) + '</td></tr>';
   });
+  var td = bev_total - ice_total;
+  html += '<tr class="total"><td>Total (NPV)</td><td class="ice-val">' + fmt(ice_total) + '</td><td class="bev-val">' + fmt(bev_total) + '</td><td class="' + (td>0?'cost':'save') + '">' + (td>0?'+':'') + fmt(td) + '</td></tr>';
+  document.getElementById('r-table').innerHTML = html;
 }
 
-// ────────────────────────────────────────────────────────────────
-// 6. RENDER
-// ────────────────────────────────────────────────────────────────
-const $fmt  = n => '$' + Math.round(Math.abs(n)).toLocaleString();
-const $cpm  = (total, miles) => ((total / miles) * 100).toFixed(1);
-const $sign = n => n > 0 ? '+' : '';
-
-function render({ ice, bev, iceTotal, bevTotal, totalMiles, Y, yearly, breakeven }) {
-
-  /* ── Savings hero ── */
-  const savings = iceTotal - bevTotal;
-  const heroEl  = document.getElementById('savings-card');
-  const amtEl   = document.getElementById('savings-amount');
-  const subEl   = document.getElementById('savings-sub');
-  document.getElementById('savings-yrs').textContent = Y;
-
-  if (savings >= 0) {
-    heroEl.classList.remove('neutral');
-    amtEl.textContent = $fmt(savings) + ' saved';
-    subEl.textContent = `by switching to EV per vehicle over ${Y} years (NPV)`;
-  } else {
-    heroEl.classList.add('neutral');
-    amtEl.textContent = $fmt(-savings) + ' more expensive';
-    subEl.textContent = `EV costs more per vehicle over ${Y} years — try adjusting incentives or mileage`;
-  }
-
-  document.getElementById('m-ice-cpm').textContent  = $cpm(iceTotal, totalMiles) + '¢';
-  document.getElementById('m-bev-cpm').textContent  = $cpm(bevTotal, totalMiles) + '¢';
-  document.getElementById('m-breakeven').textContent = breakeven ? 'Yr ' + breakeven : 'N/A';
-
-  renderBar(ice, bev, totalMiles);
-  renderLine(yearly);
-  renderTable(ice, bev, iceTotal, bevTotal);
+function setType(type, el) {
+  vtype = type;
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  var d = DEFAULTS[type];
+  Object.keys(d).forEach(function(k){ var el=document.getElementById(k); if(el) el.value=d[k]; });
+  calc();
 }
 
-/* ── Category metadata ── */
-const CAT = {
-  capital:        { label: 'Vehicle (net)',    color: 'var(--cat-vehicle)',   ice: true,  bev: true  },
-  fuel:           { label: 'Fuel',             color: 'var(--cat-fuel)',      ice: true,  bev: false },
-  energy:         { label: 'Electricity',      color: 'var(--cat-fuel)',      ice: false, bev: true  },
-  maintenance:    { label: 'Maintenance',      color: 'var(--cat-maint)',     ice: true,  bev: true  },
-  insurance:      { label: 'Insurance',        color: 'var(--cat-insurance)', ice: true,  bev: true  },
-  taxes:          { label: 'Fuel taxes',       color: 'var(--cat-taxes)',     ice: true,  bev: false },
-  infrastructure: { label: 'Infrastructure',  color: 'var(--cat-infra)',     ice: false, bev: true  },
-  labor:          { label: 'Charging labor',   color: 'var(--cat-labor)',     ice: false, bev: true  },
-  battery:        { label: 'Battery repl.',    color: 'var(--cat-battery)',   ice: false, bev: true  },
-};
-
-/* Resolve CSS variable to hex for Chart.js (which can't use var()) */
-function resolveColor(cssVar) {
-  const map = {
-    'var(--cat-vehicle)':   '#3B82F6',
-    'var(--cat-fuel)':      '#F59E0B',
-    'var(--cat-maint)':     '#10B981',
-    'var(--cat-infra)':     '#8B5CF6',
-    'var(--cat-insurance)': '#EC4899',
-    'var(--cat-labor)':     '#F97316',
-    'var(--cat-battery)':   '#14B8A6',
-    'var(--cat-taxes)':     '#9CA3AF',
-  };
-  return map[cssVar] || cssVar;
-}
-
-function renderBar(ice, bev, totalMiles) {
-  const ctx = document.getElementById('barChart');
-  const datasets = Object.entries(CAT).map(([key, meta]) => ({
-    label: meta.label,
-    data: [
-      meta.ice ? +((ice[key]||0) / totalMiles * 100).toFixed(2) : 0,
-      meta.bev ? +((bev[key]||0) / totalMiles * 100).toFixed(2) : 0,
-    ],
-    backgroundColor: resolveColor(meta.color),
-    borderRadius: 2,
-  }));
-
-  if (barChartInst) barChartInst.destroy();
-  barChartInst = new Chart(ctx, {
-    type: 'bar',
-    data: { labels: ['Conventional', 'Electric'], datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, padding: 8 } },
-        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toFixed(1)}¢/mi` } },
-      },
-      scales: {
-        x: { stacked: true, grid: { display: false } },
-        y: {
-          stacked: true,
-          title: { display: true, text: '¢ / mile (NPV)', font: { size: 10 } },
-          ticks: { callback: v => v + '¢', font: { size: 10 } },
-        },
-      },
-    },
-  });
-}
-
-function renderLine(yearly) {
-  const ctx = document.getElementById('lineChart');
-  if (lineChartInst) lineChartInst.destroy();
-  lineChartInst = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels:   yearly.map(y => 'Yr ' + y.year),
-      datasets: [
-        {
-          label: 'Conventional',
-          data:  yearly.map(y => Math.round(y.ice)),
-          borderColor: '#64748B',
-          backgroundColor: 'rgba(100,116,139,0.07)',
-          borderWidth: 2.5,
-          pointRadius: 3,
-          fill: false,
-          tension: 0.3,
-        },
-        {
-          label: 'Electric',
-          data:  yearly.map(y => Math.round(y.bev)),
-          borderColor: '#00A878',
-          backgroundColor: 'rgba(0,168,120,0.07)',
-          borderWidth: 2.5,
-          pointRadius: 3,
-          fill: false,
-          tension: 0.3,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 14, padding: 8 } },
-        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: $${c.parsed.y.toLocaleString()}` } },
-      },
-      scales: {
-        y: {
-          title: { display: true, text: 'Cumulative cost ($)', font: { size: 10 } },
-          ticks: { callback: v => '$' + (v >= 1000000 ? (v/1000000).toFixed(1)+'M' : (v/1000).toFixed(0)+'k'), font: { size: 10 } },
-        },
-        x: { ticks: { font: { size: 10 } } },
-      },
-    },
-  });
-}
-
-function renderTable(ice, bev, iceTotal, bevTotal) {
-  const tbody = document.getElementById('tbl-body');
-  tbody.innerHTML = '';
-
-  Object.entries(CAT).forEach(([key, meta]) => {
-    const iv = ice[key] || 0, bv = bev[key] || 0;
-    if (iv === 0 && bv === 0) return;
-    const diff = bv - iv;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><span class="dot" style="background:${resolveColor(meta.color)}"></span>${meta.label}</td>
-      <td class="cell-ice">${iv ? $fmt(iv) : '—'}</td>
-      <td class="cell-bev">${bv ? $fmt(bv) : '—'}</td>
-      <td style="color:${diff>0?'var(--c-danger)':'var(--c-success)'};font-weight:500">
-        ${iv||bv ? $sign(diff)+$fmt(diff) : '—'}
-      </td>`;
-    tbody.appendChild(tr);
-  });
-
-  const totalDiff = bevTotal - iceTotal;
-  const tfoot = document.createElement('tr');
-  tfoot.className = 'total-row';
-  tfoot.innerHTML = `
-    <td>Total (NPV)</td>
-    <td class="cell-ice">${$fmt(iceTotal)}</td>
-    <td class="cell-bev">${$fmt(bevTotal)}</td>
-    <td style="color:${totalDiff>0?'var(--c-danger)':'var(--c-success)'}">
-      ${$sign(totalDiff)}${$fmt(totalDiff)}
-    </td>`;
-  tbody.appendChild(tfoot);
-}
-
-// ────────────────────────────────────────────────────────────────
-// 7. UI ACTIONS
-// ────────────────────────────────────────────────────────────────
-function setVehicleType(vt, tabEl) {
-  vehicleType = vt;
-  document.querySelectorAll('.tco-tab').forEach(t => t.classList.toggle('active', t === tabEl));
-  loadDefaults();
-  calculate();
-}
-
-function toggleCard(id) {
-  document.getElementById(id).classList.toggle('collapsed');
-}
-
-function resetDefaults() {
-  loadDefaults();
-  calculate();
-}
-
-// ────────────────────────────────────────────────────────────────
-// 8. INIT
-// ────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  loadDefaults();
-  calculate();
-});
+// Run on load
+calc();
 </script>
 </body>
 </html>
